@@ -26,6 +26,17 @@ Audit your Claude Code configuration for security issues using [AgentShield](htt
 | `hooks/` | Command injection via interpolation, data exfiltration, silent error suppression |
 | `agents/*.md` | Unrestricted tool access, prompt injection surface, missing model specs |
 
+## Runtime Classification
+
+Before assigning severity, classify each finding by activation state:
+
+- `Runtime Active`: enabled in the current session or active Claude Code settings.
+- `Default Installed`: installed by GG's default module set, but active only when a matching hook or command runs.
+- `Optional Installed`: present only through an opt-in module/profile, or disabled by default until configured.
+- `Template Only`: checked-in examples or templates that are not automatically loaded.
+
+Do not grade template or optional inventory as if it were active runtime configuration. For example, GG keeps bundled MCP templates out of `plugin.json`, so `mcp-configs/mcp-servers.json` is `Template Only` unless copied into `.mcp.json` or otherwise enabled. `continuous-learning-v2` observer analysis is optional and disabled by default until `observer.enabled=true`.
+
 ## Prerequisites
 
 AgentShield must be installed. Check and install if needed:
@@ -149,15 +160,17 @@ Add to your CI pipeline:
 - Auto-run instructions in CLAUDE.md (prompt injection vector)
 - Missing deny lists in permissions
 - Agents with unnecessary Bash access
+- Enabled MCP servers or hooks that execute unpinned remote packages
 
 ### Medium Findings (recommended)
 - Silent error suppression in hooks (`2>/dev/null`, `|| true`)
 - Missing PreToolUse security hooks
-- `npx -y` auto-install in MCP server configs
+- `npx -y` auto-install in MCP server configs, unless the config is template-only and clearly documented as opt-in
 
 ### Info Findings (awareness)
 - Missing descriptions on MCP servers
 - Prohibitive instructions correctly flagged as good practice
+- Optional skills or templates that would become higher risk if enabled without review
 
 ## Links
 

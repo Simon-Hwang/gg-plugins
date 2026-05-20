@@ -274,9 +274,25 @@ _SECRET_RE = re.compile(
     r"([A-Za-z]+\s+)?"
     r"([A-Za-z0-9_\-/.+=]{8,})"
 )
+_STANDALONE_SECRET_RE = re.compile(
+    r"(?i)\b("
+    r"github_pat_[A-Za-z0-9_]+|"
+    r"gh[opsu]_[A-Za-z0-9_]+|"
+    r"sk-(?:ant-)?[A-Za-z0-9][A-Za-z0-9._-]{12,}|"
+    r"xox[baprs]-[A-Za-z0-9-]{10,}|"
+    r"(?:AKIA|ASIA)[0-9A-Z]{16}|"
+    r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+    r")\b"
+)
+_PRIVATE_KEY_RE = re.compile(
+    r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.*?-----END [A-Z0-9 ]*PRIVATE KEY-----",
+    re.I | re.S,
+)
 
 raw = sys.stdin.read()[:2000]
 raw = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", raw)
+raw = _STANDALONE_SECRET_RE.sub("[REDACTED]", raw)
+raw = _PRIVATE_KEY_RE.sub("[REDACTED]", raw)
 print(json.dumps({"timestamp": os.environ["TIMESTAMP"], "event": "parse_error", "raw": raw}))
 ' >> "$OBSERVATIONS_FILE"
   exit 0
@@ -321,11 +337,27 @@ _SECRET_RE = re.compile(
     r"([A-Za-z]+\s+)?"
     r"([A-Za-z0-9_\-/.+=]{8,})"
 )
+_STANDALONE_SECRET_RE = re.compile(
+    r"(?i)\b("
+    r"github_pat_[A-Za-z0-9_]+|"
+    r"gh[opsu]_[A-Za-z0-9_]+|"
+    r"sk-(?:ant-)?[A-Za-z0-9][A-Za-z0-9._-]{12,}|"
+    r"xox[baprs]-[A-Za-z0-9-]{10,}|"
+    r"(?:AKIA|ASIA)[0-9A-Z]{16}|"
+    r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+    r")\b"
+)
+_PRIVATE_KEY_RE = re.compile(
+    r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.*?-----END [A-Z0-9 ]*PRIVATE KEY-----",
+    re.I | re.S,
+)
 
 def scrub(val):
     if val is None:
         return None
-    return _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+    text = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+    text = _STANDALONE_SECRET_RE.sub("[REDACTED]", text)
+    return _PRIVATE_KEY_RE.sub("[REDACTED]", text)
 
 if parsed["input"]:
     observation["input"] = scrub(parsed["input"])

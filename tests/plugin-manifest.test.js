@@ -30,7 +30,7 @@ test('MCP template includes Context7 for documentation lookup', () => {
     mcpConfig.mcpServers.context7,
     {
       command: 'npx',
-      args: ['-y', '@upstash/context7-mcp@latest'],
+      args: ['-y', '@upstash/context7-mcp@2.2.5'],
       description: 'Live public documentation lookup for docs-lookup and documentation-lookup.',
     },
   );

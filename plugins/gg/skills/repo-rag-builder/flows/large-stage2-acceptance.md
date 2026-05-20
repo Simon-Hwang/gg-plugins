@@ -1,0 +1,70 @@
+# 大仓 Stage 2: Acceptance Gate
+
+**必须在用户明确确认后，才允许进入 Stage 3。** 此阶段是防止盲目消耗 Token 的最后防线，不允许跳过。
+
+完成后进入 → `flows/large-stage3-build.md`
+
+---
+
+## 2a. 边界歧义检测（council 触发条件）
+
+在展示确认计划前，计算边界重叠度：
+
+```
+For each candidate subsystem boundary:
+  overlap_ratio = files that could belong to multiple subsystems / total files in boundary
+  Flag as AMBIGUOUS if:
+    - overlap_ratio > 30% for any boundary pair, OR
+    - any directory satisfies classification criteria of ≥ 2 different subsystems
+
+If AMBIGUOUS_COUNT >= 2:
+  → 触发 council（见下方）
+Else:
+  → 直接进入 2b
+```
+
+### council 触发流程
+
+以 3 个并行 subagent 分别扮演 **Skeptic / Pragmatist / Critic** 角色，输入为：
+- 模糊边界清单及证据（目录列表、路由前缀、文件共用关系）
+- 仓库技术栈和团队规模（从 README / git log 估算）
+- 决策问题：「以下 N 个目录应如何划归子系统边界，以最大化后续 RAG 检索精度？」
+
+council 产出的建议边界方案连同分歧点一并纳入 2b 确认页面。
+
+---
+
+## 2b. 构建计划确认
+
+向用户展示以下确认页面，**等待明确的 y 确认**：
+
+```
+📋 构建计划确认
+─────────────────────────────────────────────
+发现的子系统（逻辑边界）:
+  1. order-service    → server/order/, server/domain/order/
+  2. payment-service  → server/payment/
+  3. user-service     → server/user/, server/auth/
+  [公共层] shared-lib → internal/, pkg/
+
+[如触发过 council，此处追加]
+⚖️  边界决策摘要:
+  Skeptic:    auth 模块独立性存疑，建议归入 user-service
+  Pragmatist: 独立更利于后续局部重建
+  Critic:     共享 JWT 工具会导致 source_paths 重叠
+  → 推荐方案: auth 保持独立，shared JWT 归入 shared-lib
+
+链路分析候选 (L3):
+  - 订单创建链路 (CreateOrder → PaymentGateway → Fulfillment)
+  - 用户认证链路 (Login → JWT → Session)
+
+成本预算预测:
+  总源码 Token: ~280,000
+  预估费用:     ~$1.92 (gemini-3.5-flash L1/L2 + claude-4.6-sonnet L3)
+
+确认后将开始批量构建。是否继续？[y/N]
+─────────────────────────────────────────────
+```
+
+**如果用户调整了边界**：更新 `_plan.json` 并重新展示。
+**如果用户取消**：终止并保留 `_state.json`（供 `--resume` 使用）。

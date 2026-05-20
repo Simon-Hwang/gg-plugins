@@ -131,10 +131,55 @@ For each changed file path:
 | `**/*.proto, **/proto/**` | api-contracts |
 | `**/*_test.go, **/*_test.py, **/test_*.py` | (skip) |
 
-**Structural change detection:**
-- **Added file in a new directory** with no existing `source_paths` match → candidate for a new L2-modules doc; flag for user confirmation before auto-creating.
-- **Deleted file** where its directory is now empty → remove the corresponding document from `_manifest.json` and remove its node + edges from `_graph.json`.
-- **Renamed file** (`R<N>` status) → update `source_paths` references; do not treat as a delete+create of a module unless the entire directory was renamed.
+**Structural change detection by git status:**
+
+| Status | Handling |
+|--------|---------|
+| `A` — Added file in new directory, no `source_paths` match | Candidate for new L2-modules doc; flag for user confirmation before auto-creating |
+| `D` — Deleted file, parent directory now **empty** | Remove corresponding document from `_manifest.json`; remove its node + all connected edges from `_graph.json` |
+| `D` — Deleted file, parent directory **still has other files** | Partial deletion: shrink affected document's `source_paths`; prune graph nodes/edges for that specific file (see Step 2a) |
+| `R<N>` — Renamed/moved file | Cross-system move: strip old path from original document's `source_paths`; add new path to target document's `source_paths`; migrate graph nodes/edges (see Step 2b) |
+
+#### Step 2a: Partial File Deletion Handling (`D` status, directory not empty)
+
+When a source file is deleted but its parent directory still contains other files:
+
+```
+1. Locate all documents in _manifest.json whose source_paths include the deleted file path
+2. For each affected document:
+   a. Remove the deleted file path from document.source_paths
+   b. Update the document entry in _manifest.json
+3. Graph pruning — load _graph.json:
+   a. Find all nodes where node.path == deleted_file_path (type: "file", "function", "class")
+   b. For each such node:
+      - Remove all edges where edge.source == node.id OR edge.target == node.id
+        (covers: calls, imports, implements, extends, handles, decided_by edges)
+      - Remove the node itself
+   c. Write back _graph.json
+4. Do NOT delete or regenerate the parent document — only remove the deleted file's contribution
+```
+
+#### Step 2b: File Move / Rename Handling (`R<N>` status)
+
+When a file is renamed or moved (possibly to a different subsystem):
+
+```
+1. Parse R<N> status: old_path → new_path
+2. Determine source document (old): find document in _manifest.json whose source_paths includes old_path
+3. Determine target document (new): find document in _manifest.json whose source_paths would include new_path
+   - If no target document exists → treat new_path as an added file (Step 2 "A" handling)
+4. Strip old_path from source document's source_paths
+5. Add new_path to target document's source_paths
+6. Graph migration — load _graph.json:
+   a. Find all nodes where node.path == old_path
+   b. Update node.path to new_path for each such node
+   c. If source document ≠ target document (cross-subsystem move):
+      - Remove edges that linked the node to nodes exclusively belonging to old subsystem
+      - Add dependency edges connecting the node to its new subsystem's parent nodes
+        (e.g., add contains edge: new_system → moved_file_node)
+   d. Write back _graph.json
+7. Update both affected document entries in _manifest.json (source_paths and last_verified_commit)
+```
 
 ### Step 3: Selective Document Update
 

@@ -54,7 +54,7 @@ Once installed, Claude Code v2.1+ automatically loads:
 
 GG follows the ECC Claude Code pattern for MCPs: plugin installs intentionally do not auto-enable bundled MCP server definitions. This keeps the default context surface small and avoids surprising external tool activation.
 
-For live third-party documentation lookup, enable Context7 manually with Claude Code `/mcp`, or copy the `context7` entry from `plugins/gg/mcp-configs/mcp-servers.json` into a project-scoped `.mcp.json`.
+For live third-party documentation lookup, enable Context7 manually with Claude Code `/mcp`, or copy the pinned `context7` entry from `plugins/gg/mcp-configs/mcp-servers.json` into a project-scoped `.mcp.json`.
 
 **Rules are not auto-loaded** (Claude Code plugin limitation). After the plugin install, copy only the language packs you need:
 

@@ -65,7 +65,7 @@ Default guard hooks run directly from `hooks/hooks.json` when the plugin is inst
 
 Claude Code plugin installs keep `plugin.json` `mcpServers` empty, following the ECC pattern: GG does not auto-enable bundled MCP servers. This avoids unexpected external tool activation and keeps the default context surface small.
 
-For `docs-lookup` and `documentation-lookup`, enable Context7 manually with Claude Code `/mcp`, or copy the `context7` entry from `mcp-configs/mcp-servers.json` into a project-scoped `.mcp.json`.
+For `docs-lookup` and `documentation-lookup`, enable Context7 manually with Claude Code `/mcp`, or copy the pinned `context7` entry from `mcp-configs/mcp-servers.json` into a project-scoped `.mcp.json`.
 
 ### Hook Runtime Controls
 

@@ -33,6 +33,17 @@ npm run scan -- --path "${TARGET_PATH:-.}" --format text
 
 Do not invent findings. Use AgentShield output as the source of truth and separate scanner facts from follow-up judgment.
 
+## Runtime Classification
+
+Classify every finding before assigning severity. Do not mix template inventory with active runtime risk:
+
+- `Runtime Active`: enabled in the current session or present in the user's active Claude Code settings.
+- `Default Installed`: installed by the default GG module set, but only active when its hook or command is triggered.
+- `Optional Installed`: present only when an opt-in module/profile is installed or explicitly enabled.
+- `Template Only`: checked-in examples or templates, including MCP entries that GG does not auto-enable.
+
+Severity should reflect both impact and activation state. For example, an unpinned MCP entry in `mcp-configs/` is `Template Only` unless copied into `.mcp.json` or active Claude Code settings; an observer loop under `continuous-learning-v2` is `Optional Installed` and remains inactive unless `observer.enabled=true`.
+
 ## Review Checklist
 
 1. Identify active runtime findings first:
@@ -46,10 +57,11 @@ Do not invent findings. Use AgentShield output as the source of truth and separa
    - template examples
    - plugin manifests
    - project-local optional settings
+   - opt-in skills or modules that are disabled by default
 3. For each critical or high finding, return:
    - file path
    - severity
-   - runtime confidence
+   - runtime classification and confidence
    - why it matters
    - exact remediation
    - whether it is safe to auto-fix
@@ -61,9 +73,9 @@ Do not invent findings. Use AgentShield output as the source of truth and separa
 Return:
 
 1. Security grade and score.
-2. Counts by severity and runtime confidence.
+2. Counts by severity and runtime classification.
 3. Critical/high findings with exact paths.
-4. Lower-confidence findings grouped separately.
+4. Optional and template-only findings grouped separately from active runtime findings.
 5. A remediation order.
 6. Commands run and whether the scan was local, CI, or npx-backed.
 

@@ -1,10 +1,10 @@
 ---
-description: Build a full RAG knowledge base for the current repository. Scans all source code and generates .rag/ with layered docs (L0→L3), API contracts, ADR index, and GraphRAG knowledge graph. Run once to initialize; use /gg:rag-sync for incremental updates after code changes.
+description: Build a full RAG knowledge base for the current repository. Scans all source code and generates .rag/ with layered docs (L0→L3), API contracts, ADR index, and GraphRAG knowledge graph. For small repos, runs fully automatically. For large/monorepo repos, use --large to enable multi-stage, checkpoint-resumable, cost-budgeted builds.
 ---
 
 # Build RAG Knowledge Base
 
-Trigger the `repo-rag-builder` skill to perform a full, one-time construction of the `.rag/` knowledge base for this repository.
+Trigger the `repo-rag-builder` skill to construct the `.rag/` knowledge base for this repository.
 
 ## When to Use
 
@@ -14,6 +14,39 @@ Trigger the `repo-rag-builder` skill to perform a full, one-time construction of
 
 For routine code changes after initialization, use `/gg:rag-sync` (incremental, much faster).
 
+## Command Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| *(none)* | Default: auto-detect. Small repos run fully automatically. Large repos prompt to add `--large`. |
+| `--large` | Enable multi-stage large-repo flow: Preflight Discovery → Acceptance Gate → Subsystem Batch Build → Validation → Merge. Prompts for boundary and cost confirmation before generating any docs. |
+| `--plan-only` | Run Discovery only and output `.rag/_plan.json` + `.rag/_discovery.md` with subsystem boundaries, Token budget projection, and cost estimates. **Does not write any documentation.** Use for cost audit before committing to a full build. |
+| `--system <name>` | Build or rebuild only the specified logical subsystem (e.g. `--system order-service`). Skips all other subsystems. Requires a prior `--plan-only` or `--large` run to have identified boundaries. |
+| `--validate` | Validate an existing `.rag/` directory without rebuilding. Checks: dead `source_paths` links, API contract traceability, and GraphRAG bidirectional edge/node integrity (no orphaned edges, no dead `doc_ref` links). Reports errors and applies pruning if needed. |
+| `--resume` | Resume a previously interrupted `--large` build from the last completed checkpoint. Reads `.rag/_state.json` and skips subsystems already marked `completed`. |
+
+## Usage Examples
+
+```bash
+# Small repo — fully automatic
+/gg:build-rag
+
+# Large/monorepo — confirm boundaries and cost before building
+/gg:build-rag --large
+
+# Audit cost and boundaries only, no doc generation
+/gg:build-rag --plan-only
+
+# Build a single subsystem
+/gg:build-rag --system order-service
+
+# Validate existing .rag/ (integrity check, no rebuild)
+/gg:build-rag --validate
+
+# Resume interrupted large-repo build
+/gg:build-rag --resume
+```
+
 ## What Gets Built
 
 ```
@@ -21,6 +54,9 @@ For routine code changes after initialization, use `/gg:rag-sync` (incremental, 
 ├── _index.md              # Navigation index
 ├── _manifest.json         # Metadata + last_synced_commit anchor
 ├── _graph.json            # GraphRAG knowledge graph
+├── _plan.json             # (--large / --plan-only) Subsystem plan + Token budget
+├── _discovery.md          # (--large / --plan-only) Human-readable discovery report
+├── _state.json            # (--large) Checkpoint state for resume
 ├── L0-overview.md         # Repository panorama
 ├── L1-systems/            # Subsystem-level docs (style-analyzer route)
 ├── L2-modules/            # Module-level docs
@@ -31,7 +67,9 @@ For routine code changes after initialization, use `/gg:rag-sync` (incremental, 
     └── NNN-*.md           # Second-level: full ADR files
 ```
 
-## Execution
+## Execution Flow
+
+### Small Repo (default)
 
 Invoke the `repo-rag-builder` skill and run all 8 phases without interruption:
 
@@ -43,6 +81,16 @@ Invoke the `repo-rag-builder` skill and run all 8 phases without interruption:
 6. **ADR** — Extract architecture decisions, build two-level retrieval system
 7. **GraphRAG** — Validate and finalize `_graph.json`
 8. **Wrap-up** — Write `_index.md` and `_manifest.json` with `last_synced_commit`
+
+### Large Repo (`--large`)
+
+Invoke the `repo-rag-builder` skill in large-repo mode. The 5-stage flow includes mandatory human confirmation gates:
+
+1. **Preflight Discovery** — Multi-dimensional boundary detection (physical packages + logical subsystem inference for monoliths), Token budget projection, checkpoint initialization
+2. **Acceptance Gate** — Present `.rag/_plan.json` and `.rag/_discovery.md`; **wait for user to confirm** subsystem boundaries, analysis candidates, and cost estimates before proceeding
+3. **Subsystem Batch Build** — Build L1/L2/API docs per confirmed subsystem; persist progress to `.rag/_state.json` after each subsystem
+4. **Validation Gateway** — Static referential integrity check: `source_paths` existence, API contract traceability, GraphRAG bidirectional edge/node consistency
+5. **Final Merge** — Generate global `_index.md`, `_manifest.json`, `_graph.json`; write `last_synced_commit` anchor
 
 ## Completion Report
 
@@ -61,5 +109,6 @@ Next: use /gg:rag-sync after code changes to keep the knowledge base current.
 ## Notes
 
 - Full build takes several minutes for large repositories; parallel execution on L1/L2/API phases reduces wall time.
-- If `.rag/` already exists, the command confirms before overwriting.
+- If `.rag/` already exists, the command confirms before overwriting (or resumes with `--resume`).
+- `--large` enables checkpoint recovery: if the build is interrupted mid-way, run `/gg:build-rag --resume` to continue from where it left off without re-spending tokens on completed subsystems.
 - After completion, configure your RAG retrieval pipeline to index `.rag/` using `_manifest.json` as the document registry and `_graph.json` for graph-aware retrieval.
