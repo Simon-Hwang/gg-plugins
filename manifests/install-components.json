@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "id": "baseline:rules",
+      "family": "baseline",
+      "description": "Language-agnostic workflow rules (agents, code-review, coding-style, dev-workflow, git, hooks, patterns, performance, security, testing).",
+      "modules": ["rules-core"]
+    },
+    {
+      "id": "baseline:agents",
+      "family": "baseline",
+      "description": "GG specialist agents.",
+      "modules": ["agents-core"]
+    },
+    {
+      "id": "baseline:commands",
+      "family": "baseline",
+      "description": "All /gg: slash commands plus command runtime scripts.",
+      "modules": ["commands-core"]
+    },
+    {
+      "id": "baseline:hooks",
+      "family": "baseline",
+      "description": "Default guard hooks plus skill lifecycle dispatcher runtime.",
+      "modules": ["hooks-runtime"]
+    },
+    {
+      "id": "baseline:workflow",
+      "family": "baseline",
+      "description": "Core workflow skills: routing, orchestration, TDD, verification, guide, search, terminal ops, workspace audit, context-budget (token overhead audit), agent-introspection-debugging (agent self-debug SOP).",
+      "modules": ["skills-workflow"]
+    },
+    {
+      "id": "lang:go",
+      "family": "language",
+      "description": "Go language pack: golang rules (coding style, hooks, patterns, security, testing) + golang skills (patterns, testing).",
+      "modules": ["rules-golang", "skills-golang"]
+    },
+    {
+      "id": "lang:python",
+      "family": "language",
+      "description": "Python language pack: python rules (coding style, patterns, security, testing) + python skills (patterns, testing).",
+      "modules": ["rules-python", "skills-python"]
+    },
+    {
+      "id": "capability:database",
+      "family": "capability",
+      "description": "Database engineering: safe migrations, PostgreSQL patterns, MySQL patterns.",
+      "modules": ["skills-database"]
+    },
+    {
+      "id": "capability:security",
+      "family": "capability",
+      "description": "Security: comprehensive review checklist + Claude Code configuration security audit.",
+      "modules": ["skills-security"]
+    },
+    {
+      "id": "capability:devops",
+      "family": "capability",
+      "description": "DevOps: CI/CD deployment workflows, Docker patterns, Git workflow, GitHub PR and CI management.",
+      "modules": ["skills-devops"]
+    },
+    {
+      "id": "capability:agentic",
+      "family": "capability",
+      "description": "Autonomous loop architectures: sequential pipelines through RFC-driven DAG orchestration.",
+      "modules": ["skills-agentic"]
+    },
+    {
+      "id": "capability:learning",
+      "family": "capability",
+      "description": "Continuous learning v2: instinct observation, confidence scoring, and skill/command evolution. Beta — observer disabled by default.",
+      "modules": ["skills-learning"]
+    },
+    {
+      "id": "capability:observability",
+      "family": "capability",
+      "description": "Optional agent observability and quality gates: enterprise-agent-ops (lifecycle + metrics + incident pattern for long-lived agents) and eval-harness (pass@k / pass^k EDD framework). Beta — opt-in.",
+      "modules": ["skills-observability"]
+    },
+    {
+      "id": "capability:rag",
+      "family": "capability",
+      "description": "Repository RAG knowledge base builder for .rag/ layered docs, API contracts, ADR retrieval, and GraphRAG sync support.",
+      "modules": ["skills-rag"]
+    },
+    {
+      "id": "capability:extended",
+      "family": "capability",
+      "description": "Extended skills: API design, ADRs, agent architecture audit, backend patterns, codebase onboarding, coding standards, docs lookup, E2E testing, error handling, hexagonal architecture, MCP server patterns, PyTorch, Redis, repo scan, team builder.",
+      "modules": ["skills-extended"]
+    },
+    {
+      "id": "capability:adversarial",
+      "family": "capability",
+      "description": "Adversarial quality assurance: santa-method (dual independent reviewer agents with verdict gate and convergence loop for semantic verification) and council (four-voice adversarial decision council to surface tradeoffs before committing to a path).",
+      "modules": ["skills-adversarial"]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "gg-plugins",
+  "version": "0.1.0",
+  "description": "GG Plugin installer for lean Go and Python software delivery on Claude Code",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test":                   "node --test tests/*.test.js",
+    "install:list-profiles":   "node scripts/install-apply.js --list-profiles",
+    "install:list-modules":    "node scripts/install-apply.js --list-modules",
+    "install:list-components": "node scripts/install-apply.js --list-components",
+    "install:python":          "node scripts/install-apply.js --profile python",
+    "install:go":              "node scripts/install-apply.js --profile go",
+    "install:full":            "node scripts/install-apply.js --profile full",
+    "install:dry-run":         "node scripts/install-apply.js --profile python --dry-run"
+  },
+  "bin": {
+    "gg-install": "scripts/install-apply.js"
+  },
+  "files": [
+    "manifests/",
+    "plugins/",
+    "scripts/",
+    "install.sh",
+    "README.md",
+    "TROUBLESHOOTING.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "golang",
+    "python",
+    "tdd",
+    "developer-tools"
+  ]
+}

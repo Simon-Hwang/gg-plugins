@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "profiles": {
+    "minimal": {
+      "description": "Low-context baseline: common rules, all agents, all commands, and core workflow skills. No hooks runtime. Good for quick tryouts or constrained context windows.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "skills-workflow"
+      ]
+    },
+    "core": {
+      "description": "Full baseline with hook dispatcher enabled. Suitable as a starting point before adding a language pack.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "skills-workflow"
+      ]
+    },
+    "go": {
+      "description": "Go developer default: core baseline + Go rules and skills + security review.",
+      "modules": [
+        "rules-core",
+        "rules-golang",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "skills-workflow",
+        "skills-golang",
+        "skills-security"
+      ]
+    },
+    "python": {
+      "description": "Python developer default: core baseline + Python rules and skills + security review.",
+      "modules": [
+        "rules-core",
+        "rules-python",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "skills-workflow",
+        "skills-python",
+        "skills-security"
+      ]
+    },
+    "full": {
+      "description": "Complete GG install: all modules. Highest context cost — recommended only when you need the full surface.",
+      "modules": [
+        "rules-core",
+        "rules-golang",
+        "rules-python",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "skills-workflow",
+        "skills-golang",
+        "skills-python",
+        "skills-database",
+        "skills-security",
+        "skills-devops",
+        "skills-agentic",
+        "skills-learning",
+        "skills-extended",
+        "skills-observability",
+        "skills-rag",
+        "skills-adversarial"
+      ]
+    }
+  }
+}

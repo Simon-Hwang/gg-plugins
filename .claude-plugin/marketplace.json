@@ -1,0 +1,17 @@
+{
+  "name": "gg-marketplace",
+  "owner": {
+    "name": "GG Plugins"
+  },
+  "metadata": {
+    "description": "GG workflow assets for lean Go and Python development",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "gg",
+      "source": "./plugins/gg",
+      "description": "GG agents, skills, commands, and rules for Go/Python requirement development"
+    }
+  ]
+}

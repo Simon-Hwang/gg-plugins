@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "id": "rules-core",
+      "kind": "rules",
+      "description": "Language-agnostic workflow rules: agents orchestration, code review standards, coding style, development workflow, git, hooks, patterns, performance, security, and testing.",
+      "paths": ["plugins/gg/rules/common"],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "rules-golang",
+      "kind": "rules",
+      "description": "Go-specific coding style, hooks, patterns, security, and testing rules. Applied only to *.go and go.mod files.",
+      "paths": ["plugins/gg/rules/golang"],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "rules-python",
+      "kind": "rules",
+      "description": "Python-specific coding style, patterns, security, and testing rules. Applied only to *.py files.",
+      "paths": ["plugins/gg/rules/python"],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-core",
+      "kind": "agents",
+      "description": "GG specialist agents: planner, architect, tdd-guide, go-reviewer, go-build-resolver, python-reviewer, build-error-resolver, code-reviewer, security-reviewer, doc-updater, database-reviewer, and more.",
+      "paths": ["plugins/gg/agents"],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "commands-core",
+      "kind": "commands",
+      "description": "All /gg: slash commands: /gg:plan, /gg:go-build, /gg:go-test, /gg:go-review, /gg:python-review, /gg:quality-gate, /gg:harness-audit, /gg:security-scan, /gg:update-docs, /gg:learn, and more, plus command runtime scripts.",
+      "paths": ["plugins/gg/commands", "plugins/gg/scripts"],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "hooks-runtime",
+      "kind": "hooks",
+      "description": "Hook runtime for GG default guard hooks (compact reminders, quality gate, config protection, GateGuard) plus skill lifecycle dispatch (SessionStart, PreToolUse, PostToolUse, Stop, SessionEnd). Installs scripts to ~/.claude/plugins/gg/ and merges hook entries into ~/.claude/settings.json.",
+      "paths": ["plugins/gg/hooks", "plugins/gg/scripts"],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-workflow",
+      "kind": "skills",
+      "description": "Core workflow skills: using-gg (routing), plan-orchestrate (agent chains), iterative-retrieval (subagent context handoff), tdd-workflow (RED-GREEN-REFACTOR), verification-loop (quality gates), gg-guide (navigation), search-first, terminal-ops, strategic-compact (manual context compaction), workspace-surface-audit, context-budget (token-overhead audit), agent-introspection-debugging (4-phase agent self-debug).",
+      "paths": [
+        "plugins/gg/skills/using-gg",
+        "plugins/gg/skills/plan-orchestrate",
+        "plugins/gg/skills/iterative-retrieval",
+        "plugins/gg/skills/tdd-workflow",
+        "plugins/gg/skills/verification-loop",
+        "plugins/gg/skills/gg-guide",
+        "plugins/gg/skills/search-first",
+        "plugins/gg/skills/terminal-ops",
+        "plugins/gg/skills/strategic-compact",
+        "plugins/gg/skills/workspace-surface-audit",
+        "plugins/gg/skills/context-budget",
+        "plugins/gg/skills/agent-introspection-debugging"
+      ],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-golang",
+      "kind": "skills",
+      "description": "Go engineering skills: golang-patterns (idiomatic Go, concurrency, error handling) and golang-testing (table-driven tests, benchmarks, fuzzing, TDD).",
+      "paths": [
+        "plugins/gg/skills/golang-patterns",
+        "plugins/gg/skills/golang-testing"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-python",
+      "kind": "skills",
+      "description": "Python engineering skills: python-patterns (Pythonic idioms, PEP 8, type hints) and python-testing (pytest, TDD, fixtures, mocking, parametrization, coverage).",
+      "paths": [
+        "plugins/gg/skills/python-patterns",
+        "plugins/gg/skills/python-testing"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-database",
+      "kind": "skills",
+      "description": "Database skills: safe schema/data migrations and rollback (database-migrations), PostgreSQL query and schema patterns (postgres-patterns), MySQL patterns (mysql-patterns).",
+      "paths": [
+        "plugins/gg/skills/database-migrations",
+        "plugins/gg/skills/postgres-patterns",
+        "plugins/gg/skills/mysql-patterns"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-security",
+      "kind": "skills",
+      "description": "Security skills: comprehensive review checklist for auth, secrets, API, payments (security-review) and Claude Code configuration security audit via AgentShield (security-scan).",
+      "paths": [
+        "plugins/gg/skills/security-review",
+        "plugins/gg/skills/security-scan"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-devops",
+      "kind": "skills",
+      "description": "DevOps skills: CI/CD pipeline and deployment workflows (deployment-patterns), Docker and Docker Compose patterns (docker-patterns), Git branching and commit conventions (git-workflow), GitHub PR and CI management (github-ops).",
+      "paths": [
+        "plugins/gg/skills/deployment-patterns",
+        "plugins/gg/skills/docker-patterns",
+        "plugins/gg/skills/git-workflow",
+        "plugins/gg/skills/github-ops"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-agentic",
+      "kind": "skills",
+      "description": "Autonomous loop patterns: sequential pipelines, NanoClaw REPL, infinite agentic loops, continuous PR loops, Ralphinho RFC-driven DAG orchestration.",
+      "paths": [
+        "plugins/gg/skills/autonomous-loops"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-learning",
+      "kind": "skills",
+      "description": "Continuous learning v2: instinct-based session observation, confidence scoring, project-scoped instincts, and evolution into skills/commands/agents. Requires observer.enabled=true in config.json to run background analysis.",
+      "paths": [
+        "plugins/gg/skills/continuous-learning-v2"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "beta"
+    },
+    {
+      "id": "skills-extended",
+      "kind": "skills",
+      "description": "Extended backend engineering skills: api-design, architecture-decision-records, agent-architecture-audit, backend-patterns, codebase-onboarding, coding-standards, documentation-lookup, e2e-testing, error-handling, hexagonal-architecture, mcp-server-patterns, pytorch-patterns, redis-patterns, repo-scan, team-builder.",
+      "paths": [
+        "plugins/gg/skills/api-design",
+        "plugins/gg/skills/architecture-decision-records",
+        "plugins/gg/skills/agent-architecture-audit",
+        "plugins/gg/skills/backend-patterns",
+        "plugins/gg/skills/codebase-onboarding",
+        "plugins/gg/skills/coding-standards",
+        "plugins/gg/skills/documentation-lookup",
+        "plugins/gg/skills/e2e-testing",
+        "plugins/gg/skills/error-handling",
+        "plugins/gg/skills/hexagonal-architecture",
+        "plugins/gg/skills/mcp-server-patterns",
+        "plugins/gg/skills/pytorch-patterns",
+        "plugins/gg/skills/redis-patterns",
+        "plugins/gg/skills/repo-scan",
+        "plugins/gg/skills/team-builder"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-observability",
+      "kind": "skills",
+      "description": "Optional agent observability and quality-gate skills: enterprise-agent-ops (long-lived agent lifecycle, metrics, incident pattern), eval-harness (eval-driven development with pass@k / pass^k metrics), and task-trace (local JSONL task timelines with tool/file activity). Pair with continuous-learning-v2 to gate /gg:promote on functional evals instead of confidence alone.",
+      "paths": [
+        "plugins/gg/skills/enterprise-agent-ops",
+        "plugins/gg/skills/eval-harness",
+        "plugins/gg/skills/task-trace"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
+      "id": "skills-rag",
+      "kind": "skills",
+      "description": "RAG knowledge base builder: repo-rag-builder generates .rag/ with layered docs (L0 overview, L1 system, L2 module, L3 chain), OpenAPI contracts, two-level ADR retrieval, and GraphRAG knowledge graph. Pair with /gg:build-rag (full build) and /gg:rag-sync (incremental sync via doc-updater).",
+      "paths": [
+        "plugins/gg/skills/repo-rag-builder"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "beta"
+    },
+    {
+      "id": "skills-adversarial",
+      "kind": "skills",
+      "description": "Adversarial verification and decision council: santa-method (dual independent reviewer agents with convergence loop — use before shipping production code, migrations, or public APIs) and council (four-voice adversarial decision council for architecture and strategy choices).",
+      "paths": [
+        "plugins/gg/skills/santa-method",
+        "plugins/gg/skills/council"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    }
+  ]
+}

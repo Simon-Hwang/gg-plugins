@@ -1,0 +1,163 @@
+spec_version: "0.1.0"
+name: gg
+version: 0.1.0
+description: "Lean Claude Code plugin for Go and Python software delivery — agents, skills, commands, hooks, and rules for the full requirement-to-release workflow."
+author: gg
+license: MIT
+model:
+  preferred: claude-sonnet-4-6
+  fallback:
+    - claude-opus-4-6
+
+agents:
+  # Planning & Architecture
+  - planner
+  - architect
+  - code-architect
+  - code-explorer
+  # Code Quality & Review
+  - code-reviewer
+  - code-simplifier
+  - silent-failure-hunter
+  - pr-test-analyzer
+  - refactor-cleaner
+  # Test-Driven Development
+  - tdd-guide
+  - e2e-runner
+  # Language-Specific Reviewers
+  - go-reviewer
+  - python-reviewer
+  # Build Error Resolvers
+  - build-error-resolver
+  - go-build-resolver
+  - pytorch-build-resolver
+  # Security & Performance
+  - security-reviewer
+  - performance-optimizer
+  # Data & Infrastructure
+  - database-reviewer
+  # Documentation & Operations
+  - doc-updater
+  - docs-lookup
+  # Autonomous & Orchestration
+  - loop-operator
+  - harness-optimizer
+
+skills:
+  # Core GG Workflow
+  - using-gg
+  - gg-guide
+  - plan-orchestrate
+  - iterative-retrieval
+  - context-budget
+  - agent-introspection-debugging
+  # Code Quality
+  - coding-standards
+  - backend-patterns
+  - error-handling
+  - hexagonal-architecture
+  # Testing
+  - tdd-workflow
+  - e2e-testing
+  - verification-loop
+  # Go
+  - golang-patterns
+  - golang-testing
+  # Python
+  - python-patterns
+  - python-testing
+  - pytorch-patterns
+  # Database
+  - database-migrations
+  - postgres-patterns
+  - mysql-patterns
+  - redis-patterns
+  # Security
+  - security-review
+  - security-scan
+  # Architecture & Design
+  - api-design
+  - architecture-decision-records
+  - agent-architecture-audit
+  # Infrastructure & Deployment
+  - deployment-patterns
+  - docker-patterns
+  - mcp-server-patterns
+  # Documentation & Search
+  - documentation-lookup
+  - search-first
+  - codebase-onboarding
+  - repo-scan
+  - repo-rag-builder
+  - workspace-surface-audit
+  # Git & GitHub
+  - git-workflow
+  - github-ops
+  # Continuous Learning
+  - continuous-learning-v2
+  # Autonomous Operations
+  - autonomous-loops
+  - team-builder
+  - terminal-ops
+  # Observability & Eval (optional)
+  - enterprise-agent-ops
+  - eval-harness
+  - task-trace
+  # Adversarial Verification & Decision Council (optional)
+  - santa-method
+  - council
+
+commands:
+  # Feature Lifecycle
+  - feature        # Kickoff: research → explore → plan → design
+  - design         # Architecture & API design with council + ADRs
+  - plan           # Lightweight planning (inline, no subagents)
+  - tdd            # Test-Driven Development: Go & Python
+  - review         # Comprehensive code review (language-aware agents)
+  - refactor       # Dead code, error handling, simplification
+  # Build & Diagnosis
+  - build-fix      # Fix build/compile/lint errors (Go / Python / generic)
+  - diagnose       # Performance, silent failures, build, agent issues
+  # Database
+  - db             # Schema design, migrations, query optimization, review
+  # Shipping & Release
+  - ship           # Pre-release gate: verify → review → security → docs → deploy
+  - code-review    # GitHub PR review workflow (fetch diff, post review, approve)
+  # Documentation & Knowledge
+  - explore        # Codebase onboarding, asset scan, library docs lookup
+  - update-docs    # Sync README, API docs, runbook from source of truth
+  - build-rag      # Build full RAG knowledge base (one-time)
+  - rag-sync       # Incremental RAG sync after code changes
+  # ML / PyTorch
+  - ml             # ML/PyTorch patterns, error fixing, testing, review
+  # Agent Infrastructure
+  - agent-health   # Agent harness, context budget, security, workspace audit
+  - harness-audit  # Deterministic harness scorecard (sub-component)
+  - security-scan  # AgentShield config security scan
+  - task-trace     # Inspect task-level event timeline
+  # Orchestration
+  - orchestrate    # Run sequential agent chains (HANDOFF protocol)
+  - checkpoint     # Create/verify workflow checkpoints
+  # Continuous Learning
+  - learn          # Extract reusable patterns from session
+  - learn-eval     # Extract patterns with quality gate before saving
+  - instinct-status
+  - evolve
+  - instinct-export
+  - instinct-import
+  - promote
+  - projects
+  # Discovery
+  - gg-guide       # Navigate GG skills, agents, commands, hooks, rules
+
+tags:
+  - go
+  - python
+  - backend
+  - developer-tools
+  - code-review
+  - testing
+  - security
+  - tdd
+  - continuous-learning
+  - rag

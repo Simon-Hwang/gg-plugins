@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "id": "session-start:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture session starts as task-trace boundary events"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "id": "prompt:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture user prompts as task-trace task boundary events"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "id": "post:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture completed tool calls for task-trace timelines"
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "id": "failure:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture failed tool calls for task-trace timelines"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "id": "session-end:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture session ends as task-trace boundary events"
+      }
+    ],
+    "Stop": [
+      {
+        "id": "stop:task-trace:record",
+        "matcher": "*",
+        "script": "scripts/hooks/task-trace.js",
+        "profiles": "standard,strict",
+        "timeout": 10,
+        "description": "Capture Stop events as task-trace boundary events"
+      }
+    ]
+  }
+}
+

@@ -1,0 +1,12 @@
+{
+  "name": "gg",
+  "version": "0.1.0",
+  "description": "Lean Claude Code plugin for Go and Python software delivery — agents, skills, commands, hooks, and rules for the full requirement-to-release workflow.",
+  "skills": [
+    "./skills/"
+  ],
+  "commands": [
+    "./commands/"
+  ],
+  "mcpServers": {}
+}

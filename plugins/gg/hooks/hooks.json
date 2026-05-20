@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js SessionStart",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch SessionStart hooks declared by installed GG skills",
+        "id": "dispatch:skills:session-start"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js UserPromptSubmit",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch UserPromptSubmit hooks declared by installed GG skills",
+        "id": "dispatch:skills:user-prompt-submit"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js PreToolUse",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch PreToolUse hooks declared by installed GG skills",
+        "id": "dispatch:skills:pre-tool-use"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js pre:edit-write:suggest-compact scripts/hooks/suggest-compact.js standard,strict",
+            "timeout": 10
+          }
+        ],
+        "description": "Suggest manual compaction at logical intervals",
+        "id": "pre:edit-write:suggest-compact"
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js pre:config-protection scripts/hooks/config-protection.js standard,strict",
+            "timeout": 5
+          }
+        ],
+        "description": "Block modifications to linter/formatter config files",
+        "id": "pre:config-protection"
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js pre:edit-write:gateguard-fact-force scripts/hooks/gateguard-fact-force.js standard,strict",
+            "timeout": 5
+          }
+        ],
+        "description": "Fact-forcing gate before first edit/write of a file",
+        "id": "pre:edit-write:gateguard-fact-force"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js PostToolUse",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch PostToolUse hooks declared by installed GG skills",
+        "id": "dispatch:skills:post-tool-use"
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js post:quality-gate scripts/hooks/quality-gate.js standard,strict",
+            "async": true,
+            "timeout": 30
+          }
+        ],
+        "description": "Run lightweight quality checks after file edits",
+        "id": "post:quality-gate"
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js PostToolUseFailure",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch PostToolUseFailure hooks declared by installed GG skills",
+        "id": "dispatch:skills:post-tool-use-failure"
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js pre:compact scripts/hooks/pre-compact.js standard,strict",
+            "timeout": 10
+          }
+        ],
+        "description": "Save state before context compaction",
+        "id": "pre:compact"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js Stop",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch Stop hooks declared by installed GG skills",
+        "id": "dispatch:skills:stop"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/skill-hook-dispatcher.js SessionEnd",
+            "timeout": 30
+          }
+        ],
+        "description": "Dispatch SessionEnd hooks declared by installed GG skills",
+        "id": "dispatch:skills:session-end"
+      }
+    ]
+  }
+}
