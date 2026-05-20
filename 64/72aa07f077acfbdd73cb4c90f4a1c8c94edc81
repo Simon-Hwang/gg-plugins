@@ -1,0 +1,64 @@
+plugins/gg/README.md
+  s_11e2e6eb7d0fa8::t_9997ef27b79d5f 68
+plugins/gg/skills/repo-rag-builder/flows/large-stage5-merge.md
+  s_05e0974e5883b9::t_6ca0969c2bbf09 1-32
+plugins/gg/commands/build-rag.md
+  s_05e0974e5883b9::t_6fba19d24ee846 2,7,17-49,57-59,70-72,85-94,112-113
+plugins/gg/skills/repo-rag-builder/schemas/graph.md
+  s_05e0974e5883b9::t_57d5ad12c4ebf7 1-96
+plugins/gg/skills/repo-rag-builder/flows/small-repo.md
+  s_05e0974e5883b9::t_19e45b707a3405 1-94
+tests/observe-redaction.test.js
+  s_11e2e6eb7d0fa8::t_337d57e964c818 1-66
+plugins/gg/commands/security-scan.md
+  s_11e2e6eb7d0fa8::t_26c1714852a04a 36-46,60,64,76,78
+plugins/gg/skills/repo-rag-builder/flows/large-stage2-acceptance.md
+  s_05e0974e5883b9::t_2c21ac5d89f948 1-70
+plugins/gg/skills/continuous-learning-v2/hooks/observe.sh
+  s_11e2e6eb7d0fa8::t_09fd02ebdd1b2c 277-290,294-295,340-353,358-360
+README.md
+  s_11e2e6eb7d0fa8::t_807334bd7317c9 57
+plugins/gg/skills/repo-rag-builder/SKILL.md
+  s_05e0974e5883b9::t_bfb34226ed5cc0 40
+  s_05e0974e5883b9::t_596c5377122caf 6,8,10,14,16,18-25,29,31-38,42,44,46,48,56-67,72,74,76-77,81,83,86-87,93-98,100,106-108
+plugins/gg/skills/security-scan/SKILL.md
+  s_11e2e6eb7d0fa8::t_7608b9325a89d6 29-39,163,168,173
+plugins/gg/skills/repo-rag-builder/flows/large-stage3-build.md
+  s_05e0974e5883b9::t_932bf89940fdaf 1-50
+plugins/gg/skills/repo-rag-builder/schemas/manifest.md
+  s_05e0974e5883b9::t_b2d6e46442b548 1-99
+plugins/gg/skills/repo-rag-builder/flows/large-stage4-validation.md
+  s_05e0974e5883b9::t_cc18527fdbe00f 1-120
+tests/plugin-manifest.test.js
+  s_11e2e6eb7d0fa8::t_8cc3f2b93169ce 33
+plugins/gg/mcp-configs/mcp-servers.json
+  s_11e2e6eb7d0fa8::t_0a2201f50c01b0 5
+plugins/gg/agents/doc-updater.md
+  s_05e0974e5883b9::t_4d83fad6205e7b 134-182
+plugins/gg/skills/repo-rag-builder/flows/large-stage1-discovery.md
+  s_05e0974e5883b9::t_ee117c1bfa9232 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "6472aa07f077acfbdd73cb4c90f4a1c8c94edc81",
+  "prompts": {},
+  "sessions": {
+    "s_05e0974e5883b9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f0f1d084-923f-4442-ae56-8badf612073f",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_11e2e6eb7d0fa8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8dfbc5ad-d421-48fc-81b8-ffd0bd76f26a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    }
+  }
+}
