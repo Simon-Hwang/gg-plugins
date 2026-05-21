@@ -1,0 +1,219 @@
+plugins/gg/commands/build-rag.md
+  s_6a08116385928a::t_7be0b4b67882fe 25
+  s_6a08116385928a::t_d1f907ff7c1220 92
+plugins/gg/commands/diagnose.md
+  s_8fbd73bff84b0f::t_8e217a22008d59 182
+.cursor/rules/doc-sync.mdc
+  s_8fbd73bff84b0f::t_9a8854c1985695 1,3-43
+  h_2781cf4fccc75f 2
+plugins/gg/skills/repo-rag-builder/SKILL.md
+  s_7bdb86f37e2863::t_46ba2f1910df12 27,36
+  s_7bdb86f37e2863::t_73ffb85b966926 28-35
+  s_7bdb86f37e2863::t_571fde127747a7 117-123
+  s_7bdb86f37e2863::t_f6a507a02c5276 137-138,143
+  s_7bdb86f37e2863::t_f194f220c6b63e 20,25,37-39
+  s_7bdb86f37e2863::t_7883ed65f9eaaa 21
+  s_7bdb86f37e2863::t_b7c62b1977661d 136,139-142
+  s_6a08116385928a::t_abb9c19f39fa72 88,90-94
+  s_7bdb86f37e2863::t_73b3f4777841f9 23,26
+  s_7bdb86f37e2863::t_12a5ef35468f71 126-127
+  s_c0fd0ef4cae97f::t_a26a21848e077c 103
+plugins/gg/agent.yaml
+  s_8fbd73bff84b0f::t_343651f679037c 141
+plugins/gg/skills/repo-rag-builder/flows/large-stage1-discovery.md
+  s_7bdb86f37e2863::t_e4d0b8dee8ca7a 66
+  s_7bdb86f37e2863::t_abb5c7a4df47fe 89
+  s_7bdb86f37e2863::t_6fe2eac18b2383 35,38-39,51,53
+  s_7bdb86f37e2863::t_ecfc4ddca13abd 62,70-72,77-78,84,87
+  s_7bdb86f37e2863::t_0d171dfc6a693f 27-28
+  s_7bdb86f37e2863::t_06de6ce385b308 79-83,85-86
+  s_7bdb86f37e2863::t_1bc6ba73d37777 29
+  s_7bdb86f37e2863::t_377267bd3193e1 30
+plugins/gg/skills/repo-rag-builder/flows/document-format-requirements.md
+  s_c0fd0ef4cae97f::t_7dbf8122e3dbe6 27,31,33-36,38-40,42-43,66-67,73,79-91,94,96,99,101,120,137
+  h_2781cf4fccc75f 146
+  s_6a08116385928a::t_7c8a20bedede4b 1-26,28-30,32,37,41,54-65,68-72,74-78,92-93,95,97-98,100,102-119,121,123-136,138-145
+  s_c0fd0ef4cae97f::t_aaae69d1c70247 122
+  s_7bdb86f37e2863::t_6d3beafa149a5e 44-53
+plugins/gg/skills/repo-rag-builder/schemas/plan.md
+  s_7bdb86f37e2863::t_b2167a517139ae 92-102,105-110
+  s_7bdb86f37e2863::t_f32c16251b1db0 42-43,45-59
+  s_bb73e5a77f29fc::t_1a89716333a211 1-41,44,60-91,103-104
+  s_7bdb86f37e2863::t_59498791b50aac 111-112
+plugins/gg/AGENTS.md
+  s_8fbd73bff84b0f::t_9f1ba1d86255a1 167,171
+plugins/gg/skills/repo-rag-builder/flows/small-repo.md
+  s_6a08116385928a::t_ed8708893f5d44 47
+  s_7bdb86f37e2863::t_19185bf5972e83 13-19,21,23-24,29-30,32-40,42-43
+  s_7bdb86f37e2863::t_2f67792ab08fef 79-80
+  s_7bdb86f37e2863::t_3ee0e0b1a2759d 124-131
+  s_6a08116385928a::t_8dc48269cc5609 5-6
+  s_7bdb86f37e2863::t_6373e8b4983718 28,31,41
+  s_7bdb86f37e2863::t_0c09ee756d4cb5 164-165
+  s_7bdb86f37e2863::t_ff03b2c13529ed 90
+  s_7bdb86f37e2863::t_6a7ba29cf741bb 112
+  s_7bdb86f37e2863::t_13975951d0b813 55-59,69-71,84-88
+  s_7bdb86f37e2863::t_34cf77ca83aaff 107-111,113-114
+  s_7bdb86f37e2863::t_1d60fbe58f1957 60-68
+  s_6a08116385928a::t_d1c0cbc73661c4 168-173
+  s_bb73e5a77f29fc::t_10e0efbf856f87 153-159
+  s_6a08116385928a::t_a975de88f3cd1e 78
+  s_7bdb86f37e2863::t_600af00c56a5be 20,22
+plugins/gg/commands/ship.md
+  s_8fbd73bff84b0f::t_773d0eada2e0a6 34
+manifests/install-modules.json
+  s_8fbd73bff84b0f::t_f1d0cc83ef38dc 43
+plugins/gg/agents/doc-updater.md
+  s_a05dd4aa64a0a4::t_79c7f3e3339753 152-153,155-157,180,186-187,193-194,197
+  s_a05dd4aa64a0a4::t_e80a65287eaddf 257,273,275-276
+  s_a05dd4aa64a0a4::t_cf99c1fa8ce109 250,260
+  s_a05dd4aa64a0a4::t_26926fa819f078 81-92
+  s_a05dd4aa64a0a4::t_309d0aae477fd0 209,230-231,234
+  s_a05dd4aa64a0a4::t_563d4f2299cc9b 3,14,16-20
+plugins/gg/commands/refactor.md
+  s_8fbd73bff84b0f::t_acb0c4795aab33 26
+plugins/gg/skills/repo-rag-builder/schemas/retrieval-contract.md
+  s_7bdb86f37e2863::t_737a7463555475 1-112
+plugins/gg/gg-commands-reference.md
+  s_6a08116385928a::t_0716bfc2de0f72 166-172
+  s_a05dd4aa64a0a4::t_a7415b7b66bee0 182
+plugins/gg/skills/repo-rag-builder/schemas/manifest.md
+  s_6a08116385928a::t_3ed6cbc7e32f53 94-95
+  s_bb73e5a77f29fc::t_d484a27ee98211 32
+  s_7bdb86f37e2863::t_2f4fec2fcf8ba8 7
+  s_c0fd0ef4cae97f::t_531c6a813e1fed 35,37-43,64-66,73,100,106-117,121,126,128,131-141
+plugins/gg/skills/using-gg/SKILL.md
+  s_8fbd73bff84b0f::t_1929ce47f8d152 61-62
+  s_8fbd73bff84b0f::t_d0470187f01737 39-40
+  s_8fbd73bff84b0f::t_842e3358e6810a 50-51
+plugins/gg/skills/repo-rag-builder/flows/large-stage4-validation.md
+  s_7bdb86f37e2863::t_78356b2e9cb9b7 108-109
+  s_7bdb86f37e2863::t_dbf557b5cffa80 166-168
+  s_6a08116385928a::t_ea4d79e739d540 6,33-44,47-48,52-56,61-69,72-73,83-84,88,91,94,97-99,102-107,112-116,122-125,129-131,134-136,138-146,150,159-161,224,233-234,237,242-250,253,256-265
+  s_7bdb86f37e2863::t_bce0c0f31bb14e 57-60
+  s_bb73e5a77f29fc::t_4313242f47fac1 3,5,8-32
+  s_7bdb86f37e2863::t_71603f80a2681a 80-82
+  s_c0fd0ef4cae97f::t_3a7a62f7c99317 45-46,49-51,70-71,74-79
+  s_7bdb86f37e2863::t_9d679e04bdb7ed 152
+  s_7bdb86f37e2863::t_99e53089c6f224 158
+  s_7bdb86f37e2863::t_26ade51280c122 169-171,173,185,191-208,226
+  s_7bdb86f37e2863::t_3f8d7dcb801101 228-232
+  s_7bdb86f37e2863::t_f3e90e9c71dbd4 211-218,225
+  s_7bdb86f37e2863::t_c36e6cdc5bcd63 266-279
+README.md
+  s_8fbd73bff84b0f::t_435be249f06c7c 13
+plugins/gg/skills/repo-rag-builder/schemas/graph.md
+  s_7bdb86f37e2863::t_327d9aab9b5a65 15
+  s_6a08116385928a::t_baf69d541d470f 32-33
+plugins/gg/commands/tdd.md
+  s_8fbd73bff84b0f::t_6676905ba440d1 125
+plugins/gg/README.md
+  s_8fbd73bff84b0f::t_592f9ee2cec443 28
+  s_8fbd73bff84b0f::t_0ee95b3f1acd51 15-16,18
+  s_8fbd73bff84b0f::t_d14789b295ae7c 36
+  s_8fbd73bff84b0f::t_ff952fadc1b261 54
+plugins/gg/commands/ml.md
+  s_8fbd73bff84b0f::t_bcaeaaab40352b 204
+plugins/gg/commands/rag-sync.md
+  s_a05dd4aa64a0a4::t_31f24ddda40d6a 2,7,11-12,15-16,19-21,27-33,35-51,54-115,117-120,130,138,141,149
+  s_a05dd4aa64a0a4::t_a9aae1b1249155 116
+plugins/gg/skills/repo-rag-builder/flows/large-stage2-acceptance.md
+  s_7bdb86f37e2863::t_8c01063f1258e1 33
+  s_7bdb86f37e2863::t_9e8942a3c107a6 70-73
+plugins/gg/skills/repo-rag-builder/flows/large-stage3-build.md
+  s_6a08116385928a::t_77ab41547f22bc 5,67,74-76
+  s_7bdb86f37e2863::t_6d41d5a9f0e796 3,11-31,44-45,73,77,115
+  s_7bdb86f37e2863::t_d481208874c7d6 124
+  s_7bdb86f37e2863::t_d17e3c56e956e8 131-133
+  s_7bdb86f37e2863::t_e8decbb48546c9 78,85-92,100
+  s_7bdb86f37e2863::t_64c89ee102ce26 122-123,125-130
+  s_7bdb86f37e2863::t_4a1ec1299fcfe0 32-41,46-65,69,72,101-103,111-114,118
+  s_7bdb86f37e2863::t_347c442355ba1f 135
+plugins/gg/skills/gg-guide/SKILL.md
+  s_8fbd73bff84b0f::t_0033fd4804efd0 70
+  s_8fbd73bff84b0f::t_b92a8b172fa526 79
+  s_8fbd73bff84b0f::t_7ef4f3a2bab59c 122-124
+  s_8fbd73bff84b0f::t_7a48ecaf6e5129 86
+plugins/gg/CLAUDE.md
+  s_8fbd73bff84b0f::t_ece3671fbe570a 39
+  s_8fbd73bff84b0f::t_690ddf0a3bf4b6 15
+  s_8fbd73bff84b0f::t_f014ec9adb239c 90
+  s_8fbd73bff84b0f::t_b9ac502e3eef82 24-26
+plugins/gg/skills/repo-rag-builder/flows/large-stage5-merge.md
+  s_6a08116385928a::t_be5bdfc7bfdbf1 3,9,18
+  s_7bdb86f37e2863::t_0c2ea83f423f71 13-14,16
+  s_bb73e5a77f29fc::t_ecda8a330ee2b4 10,17,19
+plugins/gg/scripts/validate-rag.js
+  s_7bdb86f37e2863::t_b924131067814d 534-535,538-539,550-555
+  s_bb73e5a77f29fc::t_4f549800029f0f 600-604
+  s_bb73e5a77f29fc::t_57e053b0b9542e 1-36,97-232,234-241,243,247,250-341,343-381,383,385-389,391-404,406-407,409-427,432-433,436-442,444-448,454-462,479,497-508,510-511,514-525,527-533,536-537,540-549,556-580,582-586,594-598,654,657-664,666-677,689,691-695,743-744,746-747,749-750,771-786
+  s_bb73e5a77f29fc::t_bcc44deaeef95c 751-770
+  s_7bdb86f37e2863::t_2ab6388a886d35 599,605-653,655-656
+  s_7bdb86f37e2863::t_f3cf09be48d1de 472-476
+  s_7bdb86f37e2863::t_48cd10693ca00f 512-513
+  s_7bdb86f37e2863::t_3cee3c01b9e770 683,686,688,690
+  s_bb73e5a77f29fc::t_20beee761c72d7 37-96,233,242,244-246,248-249,342,382,384,390,405,408,428-431,434-435,443,449-453,463-471,477-478,480-496,509,526,581,587-593,665,678-682,684-685,687,696-742,745,748
+TROUBLESHOOTING.md
+  s_8fbd73bff84b0f::t_1c099cbef14ca0 134-135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "6fee7a1a19acddf02ff15f2f0573ec7bc3f4fd2e",
+  "prompts": {},
+  "humans": {
+    "h_2781cf4fccc75f": {
+      "author": "sawyerhuang <sawyerhuang@tencent.com>"
+    }
+  },
+  "sessions": {
+    "s_6a08116385928a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "86452392-9315-4c41-8198-c21a4aa31aae",
+        "model": "default"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_7bdb86f37e2863": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "c9fc9461-267f-4dd7-b8d9-70e325aca410",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_8fbd73bff84b0f": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "dedd3b73-5bf5-4971-b8cb-6c43d4ccc000",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_a05dd4aa64a0a4": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "c00a8909-1e3b-4829-8ead-0873f98783b9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_bb73e5a77f29fc": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "b45b855c-8170-4381-8618-87881bb62b18",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    },
+    "s_c0fd0ef4cae97f": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "4681f0dc-5372-4d97-a201-0e97ac375c75",
+        "model": "gpt-5.5"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    }
+  }
+}
