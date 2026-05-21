@@ -130,10 +130,12 @@ commands:
   # ML / PyTorch
   - ml             # ML/PyTorch patterns, error fixing, testing, review
   # Agent Infrastructure
-  - agent-health   # Agent harness, context budget, security, workspace audit
-  - harness-audit  # Deterministic harness scorecard (sub-component)
-  - security-scan  # AgentShield config security scan
-  - task-trace     # Inspect task-level event timeline
+  - agent-health           # Agent harness, context budget, security, workspace audit
+  - harness-audit          # Deterministic harness scorecard (sub-component)
+  - observability-ready    # GG observability readiness gate
+  - doctor                 # Plugin install health check
+  - security-scan          # AgentShield config security scan
+  - task-trace             # Inspect task-level event timeline
   # Orchestration
   - orchestrate    # Run sequential agent chains (HANDOFF protocol)
   - checkpoint     # Create/verify workflow checkpoints

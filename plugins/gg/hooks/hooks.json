@@ -77,6 +77,18 @@
         ],
         "description": "Fact-forcing gate before first edit/write of a file",
         "id": "pre:edit-write:gateguard-fact-force"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js pre:mcp-health scripts/hooks/mcp-health-check.js standard,strict",
+            "timeout": 15
+          }
+        ],
+        "description": "Pre-flight MCP server health probe before MCP tool calls",
+        "id": "pre:mcp-health"
       }
     ],
     "PostToolUse": [
@@ -118,6 +130,18 @@
         ],
         "description": "Dispatch PostToolUseFailure hooks declared by installed GG skills",
         "id": "dispatch:skills:post-tool-use-failure"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('path'),f=require('fs'),h=require('os').homedir();const marker=p.join('scripts','hooks','skill-hook-dispatcher.js');const candidates=[];if(process.env.CLAUDE_PLUGIN_ROOT)candidates.push(process.env.CLAUDE_PLUGIN_ROOT);if(process.env.GG_PLUGIN_ROOT)candidates.push(process.env.GG_PLUGIN_ROOT);const d=p.join(h,'.claude');for(const s of [['gg'],['gg@gg'],['marketplaces','gg'],['marketplaces','gg-plugins']])candidates.push(p.join(d,'plugins',...s));const r=candidates.find(x=>x&&f.existsSync(p.join(x,marker)))||process.cwd();const script=p.join(r,'scripts/hooks/plugin-hook-bootstrap.js');process.env.CLAUDE_PLUGIN_ROOT=r;process.env.GG_PLUGIN_ROOT=r;process.argv.splice(1,0,script);require(script)\" node scripts/hooks/run-with-flags.js post:mcp-health-failure scripts/hooks/mcp-health-check.js standard,strict",
+            "timeout": 10
+          }
+        ],
+        "description": "Mark MCP server unhealthy on tool call failure and attempt reconnect",
+        "id": "post:mcp-health-failure"
       }
     ],
     "PreCompact": [

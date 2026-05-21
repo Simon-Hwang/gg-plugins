@@ -239,7 +239,42 @@ GG 插件面向 Go / Python 后端开发场景，提供覆盖完整开发生命�
 
 ---
 
-## 五、工作流检查点
+## 五、可观测性与健康检查
+
+### `/gg:observability-ready` — 可观测性就绪门控
+
+**适用场景：** 发布前、启动自治循环前、或首次在新机器安装后，快速确认 GG 的可观测面（task-trace、harness-audit、eval-harness、hook runtime）是否完整就绪。
+
+```
+/gg:observability-ready               # 文本格式报告（12 分满分）
+/gg:observability-ready --format json # JSON 格式，适合自动化
+/gg:observability-ready --root <path> # 检查指定 plugin root
+```
+
+输出 `ready: yes/no` + 分类得分 + 最多 3 个修复建议（`top_actions`）。
+
+**收益：** 在 `ship` 或 `promote` 之前运行，可以确认 trace 覆盖和 eval 门控已到位。
+
+---
+
+### `/gg:doctor` — 插件安装健康检查
+
+**适用场景：** 命令行为异常、升级 GG 后、或部分安装后，诊断 plugin root 中的缺失或损坏文件。
+
+```
+/gg:doctor                                    # 检查所有组件
+/gg:doctor --component hooks-runtime          # 只检查 hooks-runtime
+/gg:doctor --component commands-core          # 只检查 commands-core
+/gg:doctor --format json                      # JSON 格式
+```
+
+按组件输出 `ok / warning / error` 状态。`error` 代表必需文件缺失；`warning` 代表可选模块（如 skills-observability）未安装。
+
+退出码：有 warning 或 error 时为 1，全部 ok 时为 0。
+
+---
+
+## 六、工作流检查点
 
 ### `/gg:checkpoint` — 工作流检查点
 
@@ -307,6 +342,8 @@ GG 插件面向 Go / Python 后端开发场景，提供覆盖完整开发生命�
 | 高风险变更发布 | `/gg:review --strict` → `/gg:ship --strict` |
 | 代码腐化治理 | `/gg:refactor` → `/gg:review` |
 | 记录本次收获 | `/gg:learn` → `/gg:checkpoint create <名称>` |
+|| 确认可观测性就绪 | `/gg:observability-ready` → `/gg:ship` |
+|| 诊断安装异常 | `/gg:doctor` → 按 top_actions 修复 → `/gg:doctor` |
 
 ---
 
