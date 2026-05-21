@@ -1,0 +1,41 @@
+tests/mcp-health-check.test.js
+  s_d4fc67559b55d4::t_b70e04ced78121 1-298
+plugins/gg/agent.yaml
+  s_d4fc67559b55d4::t_ccf85fd8ce337a 133-138
+tests/doctor.test.js
+  s_d4fc67559b55d4::t_2de44eb221005f 1-190
+plugins/gg/scripts/hooks/mcp-health-check.js
+  s_d4fc67559b55d4::t_28390ebaaa3680 1-639
+plugins/gg/commands/doctor.md
+  s_d4fc67559b55d4::t_14e65b6306e3a0 1-67
+plugins/gg/hooks/hooks.json
+  s_d4fc67559b55d4::t_dfe02c2fe400f4 80-91
+  s_d4fc67559b55d4::t_d38814068edd68 133-144
+plugins/gg/scripts/observability-readiness.js
+  s_d4fc67559b55d4::t_3800963e80c4fd 1-306
+plugins/gg/scripts/doctor.js
+  s_d4fc67559b55d4::t_a0325c17485e78 1-277
+tests/observability-readiness.test.js
+  s_d4fc67559b55d4::t_63935633386f2d 1-187
+plugins/gg/gg-commands-reference.md
+  s_d4fc67559b55d4::t_36eb137082f035 345-346
+  s_d4fc67559b55d4::t_d5ad7861fbcd55 242-277
+plugins/gg/commands/observability-ready.md
+  s_d4fc67559b55d4::t_322ef4ceb871d2 1-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "4cdff362ce499fa5b1286be999d52f1d901a3862",
+  "prompts": {},
+  "sessions": {
+    "s_d4fc67559b55d4": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62e8125c-e108-45eb-b43e-7a70380712bf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    }
+  }
+}
