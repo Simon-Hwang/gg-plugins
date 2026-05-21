@@ -40,7 +40,7 @@
     {
       "id": "commands-core",
       "kind": "commands",
-      "description": "All /gg: slash commands: /gg:plan, /gg:go-build, /gg:go-test, /gg:go-review, /gg:python-review, /gg:quality-gate, /gg:harness-audit, /gg:security-scan, /gg:update-docs, /gg:learn, and more, plus command runtime scripts.",
+      "description": "All /gg: slash commands: /gg:plan, /gg:tdd, /gg:build-fix, /gg:review, /gg:ship, /gg:harness-audit, /gg:security-scan, /gg:update-docs, /gg:learn, and more, plus command runtime scripts.",
       "paths": ["plugins/gg/commands", "plugins/gg/scripts"],
       "defaultInstall": true,
       "cost": "medium",

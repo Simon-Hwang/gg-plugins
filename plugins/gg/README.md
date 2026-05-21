@@ -12,10 +12,10 @@ The files under `agents/`, `commands/`, `skills/`, and `rules/` follow a curated
 1. `/gg:plan` creates a plan and waits for confirmation.
 2. `plan-orchestrate` converts a plan into per-step agent chains.
 3. `planner`, `architect`, and `tdd-guide` drive requirement breakdown, design, and test-first implementation.
-4. Go work uses `/gg:go-build`, `/gg:go-test`, `/gg:go-review`, `go-build-resolver`, and `go-reviewer`.
-5. Python work uses `/gg:python-review`, `python-reviewer`, and the generic `build-error-resolver` for failing checks.
+4. Go work uses `/gg:tdd`, `/gg:build-fix`, `/gg:review`, `go-build-resolver`, and `go-reviewer`.
+5. Python work uses `/gg:tdd`, `/gg:build-fix`, `/gg:review`, `python-reviewer`, and the generic `build-error-resolver` for failing checks.
 6. DB-impacting work uses `database-reviewer`, `database-migrations`, `postgres-patterns`, or `mysql-patterns`.
-7. `/gg:quality-gate`, `/gg:test-coverage`, `/gg:security-scan`, and `verification-loop` provide evidence gates.
+7. `/gg:security-scan` and `verification-loop` provide evidence gates.
 8. `/gg:update-docs`, `doc-updater`, `deployment-patterns`, and `docker-patterns` support documentation and release readiness.
 
 ## P0 Assets
@@ -25,7 +25,7 @@ P0 is the stable Go/Python requirement-development spine:
 - Agents: `planner`, `architect`, `tdd-guide`, `go-reviewer`, `go-build-resolver`, `python-reviewer`, `build-error-resolver`, `code-reviewer`
 - Skills: `using-gg`, `plan-orchestrate`, `iterative-retrieval`, `tdd-workflow`, `verification-loop`, `context-budget`, `agent-introspection-debugging`, `golang-patterns`, `golang-testing`, `python-patterns`, `python-testing`
 - Rules: `rules/common`, `rules/golang`, `rules/python`
-- Commands: `/gg:plan`, `/gg:go-build`, `/gg:go-test`, `/gg:go-review`, `/gg:python-review`, `/gg:quality-gate`
+- Commands: `/gg:plan`, `/gg:tdd`, `/gg:build-fix`, `/gg:review`
 
 ## P1 Assets
 
@@ -33,7 +33,7 @@ P1 completes backend engineering, security, documentation, and release readiness
 
 - Agents: `security-reviewer`, `doc-updater`, `database-reviewer`
 - Skills: `security-review`, `security-scan`, `repo-scan`, `workspace-surface-audit`, `search-first`, `git-workflow`, `database-migrations`, `postgres-patterns`, `mysql-patterns`, `deployment-patterns`, `docker-patterns`
-- Commands: `/gg:security-scan`, `/gg:code-review`, `/gg:test-coverage`, `/gg:harness-audit`, `/gg:update-docs`, `/gg:checkpoint`
+- Commands: `/gg:security-scan`, `/gg:harness-audit`, `/gg:update-docs`, `/gg:checkpoint`
 
 ## P2 Observability & Eval (Optional)
 
@@ -51,7 +51,7 @@ GG ships two opt-in skills for agent observability and quality gates. Install vi
 GG includes `continuous-learning-v2` as an optional learning-governance layer:
 
 - Skill: `continuous-learning-v2`
-- Commands: `/gg:learn`, `/gg:learn-eval`, `/gg:instinct-status`, `/gg:evolve`, `/gg:instinct-export`, `/gg:instinct-import`, `/gg:promote`, `/gg:projects`
+- Commands: `/gg:learn`, `/gg:instinct-status`, `/gg:evolve`, `/gg:instinct-export`, `/gg:instinct-import`, `/gg:promote`, `/gg:projects`
 - Hooks: `hooks/hooks.json` registers GG default guard hooks (`suggest-compact`, `PreCompact`, `quality-gate`, `gateguard-fact-force`, `config-protection`) and the generic skill hook dispatcher.
 - Runtime scripts: `scripts/hooks/skill-hook-dispatcher.js`, `scripts/hooks/observe-runner.js`, `scripts/hooks/run-with-flags.js`, `scripts/hooks/*gate*.js`, `scripts/hooks/*compact*.js`, `scripts/lib/hook-flags.js`
 

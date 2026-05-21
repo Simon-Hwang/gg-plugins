@@ -201,4 +201,4 @@ Next: /gg:review for full Python code quality review
 - `/gg:tdd` — full TDD cycle for Python (broader than ML)
 - `/gg:review` — comprehensive Python code review including security
 - `/gg:diagnose` — profile training bottlenecks or memory growth
-- `/gg:build` — fix pip/dependency errors before ML errors
+- `/gg:build-fix` — fix pip/dependency errors before ML errors

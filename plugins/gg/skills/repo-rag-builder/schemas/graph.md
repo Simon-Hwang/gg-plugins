@@ -12,7 +12,7 @@
 | `function` | 关键函数 | Phase 6 / Stage 3 |
 | `api` | API 端点 | Phase 5 / Stage 3 |
 | `adr` | 架构决策 | Phase 7 / Stage 3 |
-| `config` | 配置项 | Phase 1 / Stage 1 |
+| `config` | 配置项（如全局配置文件、环境变量定义）；**仅当**配置项被多个模块直接依赖且改动影响面广时才创建，不强制 | Phase 1 / Stage 1（可选） |
 
 > **精简原则**：只纳入「改它需要知道影响了谁」的关键节点。模块内私有辅助函数不进图谱；暴露给其他模块的接口函数必须在。
 
@@ -28,6 +28,8 @@
 | `decided_by` | 决策关联 | module M decided_by ADR-001 |
 | `imports` | 导入关系 | file A imports file B |
 | `extends` | 继承关系 | class Child extends class Parent |
+
+> **校验**：`flows/large-stage4-validation.md` **4e** 要求边使用 `source`/`target`；使用 `from`/`to` 判 **FAIL**。
 
 ## 文件格式
 

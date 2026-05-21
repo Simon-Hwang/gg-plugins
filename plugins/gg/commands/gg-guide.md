@@ -139,6 +139,5 @@ Explain how GG is structured as a plugin:
 
 - `/gg:plan` for requirement restatement, risk assessment, and plan confirmation
 - `/gg:orchestrate` for running sequential agent chains
-- `/gg:quality-gate` for evidence gates after implementation
 - `/gg:security-scan` for security-oriented review workflow
 - `/gg:checkpoint` for creating and listing workflow checkpoints

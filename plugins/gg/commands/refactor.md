@@ -23,7 +23,7 @@ go build ./... && go test ./...
 pytest --tb=short
 ```
 
-If tests fail, stop and fix them first with `/gg:tdd` or `/gg:build`.
+If tests fail, stop and fix them first with `/gg:tdd` or `/gg:build-fix`.
 
 ---
 

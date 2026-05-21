@@ -164,12 +164,11 @@ RAG maintenance:   (after each feature) doc-updater [RAG Sync Mode] via /gg:rag-
 
 - `skills/` is the canonical workflow surface for new contributions.
 - `commands/` provides slash-entry UX. A command is one of three shapes:
-  1. **Thin shortcut** — a pointer to a single agent (e.g. `/gg:go-review` → `go-reviewer`).
+  1. **Thin shortcut** — a pointer to a single agent (e.g. `/gg:security-scan` → `security-reviewer`).
      The command file carries no independent workflow knowledge; renaming or
      removing the agent only requires updating the pointer text.
   2. **Inline workflow** — the prompt body IS the workflow (e.g. `/gg:plan`,
-     `/gg:code-review`, `/gg:quality-gate`, `/gg:go-test`). Agents may or may
-     not be invoked from inside it.
+     `/gg:review`, `/gg:tdd`). Agents may or may not be invoked from inside it.
   3. **Subsystem CLI** — wraps a script under `skills/<x>/scripts/`
      (e.g. `/gg:learn`, `/gg:evolve` → `continuous-learning-v2` CLI).
 - `agents/` defines specialized subagents for delegation. An agent does NOT need a

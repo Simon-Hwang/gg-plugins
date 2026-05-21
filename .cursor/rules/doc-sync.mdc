@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+# Doc Sync — gg-plugins Contributor Rule
+
+Full rule: `.claude/rules/doc-sync.md`
+
+## Hard Invariants (block if violated)
+
+### Invariant 1 — Thin-shortcut command must point to a real agent
+
+When adding or renaming a command that delegates to a single agent:
+
+```bash
+# Verify the referenced agent file exists
+ls plugins/gg/agents/<agent-name>.md
+```
+
+Inline-workflow and subsystem-CLI commands (e.g. `/gg:plan`, `/gg:tdd`) have no agent dependency — skip this check.
+
+### Invariant 2 — New skill directories must be listed in manifests
+
+When adding `plugins/gg/skills/<new-skill>/SKILL.md`, append the path to the correct module in `manifests/install-modules.json`. Removing a skill: remove its path from the module.
+
+Agents and commands are bulk-copied — no manifest update needed for them.
+
+## Soft Invariant — `agent.yaml` must not list phantom commands
+
+`agent.yaml` `commands:` is used by plugin-format installers. When you **remove or rename a command**, also remove or rename its entry in `agent.yaml`. When you **add a command**, add it.
+
+```bash
+# Quick check: every entry in agent.yaml commands: should have a matching file
+ls plugins/gg/commands/<name>.md
+```
+
+## Optional Hygiene (update when they would mislead a reader)
+
+- `plugins/gg/README.md` — P0/P1/P2 command lists
+- `plugins/gg/CLAUDE.md` — Key Commands section
+- `plugins/gg/AGENTS.md` — Available Agents tables
+- `skills/using-gg/SKILL.md` and `skills/gg-guide/SKILL.md` — phase gate and routing tables
+- `manifests/install-modules.json` — module `description` fields
+- `TROUBLESHOOTING.md` — runtime requirement commands

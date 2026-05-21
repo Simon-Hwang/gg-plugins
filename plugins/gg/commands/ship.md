@@ -31,7 +31,7 @@ git diff --stat HEAD  # uncommitted changes?
 git status            # untracked files?
 ```
 
-**BLOCK** if any of these fail. Fix with `/gg:build`, `/gg:tdd`, or `/gg:refactor` first.
+**BLOCK** if any of these fail. Fix with `/gg:build-fix`, `/gg:tdd`, or `/gg:refactor` first.
 
 ---
 

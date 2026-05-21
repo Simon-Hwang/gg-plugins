@@ -122,7 +122,6 @@ commands:
   - db             # Schema design, migrations, query optimization, review
   # Shipping & Release
   - ship           # Pre-release gate: verify → review → security → docs → deploy
-  - code-review    # GitHub PR review workflow (fetch diff, post review, approve)
   # Documentation & Knowledge
   - explore        # Codebase onboarding, asset scan, library docs lookup
   - update-docs    # Sync README, API docs, runbook from source of truth
@@ -139,8 +138,7 @@ commands:
   - orchestrate    # Run sequential agent chains (HANDOFF protocol)
   - checkpoint     # Create/verify workflow checkpoints
   # Continuous Learning
-  - learn          # Extract reusable patterns from session
-  - learn-eval     # Extract patterns with quality gate before saving
+  - learn          # Extract reusable patterns from session (built-in quality gate)
   - instinct-status
   - evolve
   - instinct-export

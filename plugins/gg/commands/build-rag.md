@@ -22,7 +22,7 @@ For routine code changes after initialization, use `/gg:rag-sync` (incremental, 
 | `--large` | Enable multi-stage large-repo flow: Preflight Discovery → Acceptance Gate → Subsystem Batch Build → Validation → Merge. Prompts for boundary and cost confirmation before generating any docs. |
 | `--plan-only` | Run Discovery only and output `.rag/_plan.json` + `.rag/_discovery.md` with subsystem boundaries, Token budget projection, and cost estimates. **Does not write any documentation.** Use for cost audit before committing to a full build. |
 | `--system <name>` | Build or rebuild only the specified logical subsystem (e.g. `--system order-service`). Skips all other subsystems. Requires a prior `--plan-only` or `--large` run to have identified boundaries. |
-| `--validate` | Validate an existing `.rag/` directory without rebuilding. Checks: dead `source_paths` links, API contract traceability, and GraphRAG bidirectional edge/node integrity (no orphaned edges, no dead `doc_ref` links). Reports errors and applies pruning if needed. |
+| `--validate` | Validate existing `.rag/` without rebuilding. **Must** run Stage 4 (`flows/large-stage4-validation.md`) in full: **4a** manifest schema (`documents[]`, required fields), **4b** YAML frontmatter on every doc, **4c** `source_paths`, **4d** API traceability, **4e** graph (`source`/`target`, no `from`/`to`), **4g** Santa content audit with mandatory report. Conclude PASS / PARTIAL / FAIL — never「全通过」without Santa report or if frontmatter/manifest missing. |
 | `--resume` | Resume a previously interrupted `--large` build from the last completed checkpoint. Reads `.rag/_state.json` and skips subsystems already marked `completed`. |
 
 ## Usage Examples
@@ -89,7 +89,7 @@ Invoke the `repo-rag-builder` skill in large-repo mode. The 5-stage flow include
 1. **Preflight Discovery** — Multi-dimensional boundary detection (physical packages + logical subsystem inference for monoliths), Token budget projection, checkpoint initialization
 2. **Acceptance Gate** — Present `.rag/_plan.json` and `.rag/_discovery.md`; **wait for user to confirm** subsystem boundaries, analysis candidates, and cost estimates before proceeding
 3. **Subsystem Batch Build** — Build L1/L2/API docs per confirmed subsystem; persist progress to `.rag/_state.json` after each subsystem
-4. **Validation Gateway** — Static referential integrity check: `source_paths` existence, API contract traceability, GraphRAG bidirectional edge/node consistency
+4. **Validation Gateway** — Manifest schema + frontmatter + `source_paths` + API + graph schema + Santa content audit (see `flows/large-stage4-validation.md`)
 5. **Final Merge** — Generate global `_index.md`, `_manifest.json`, `_graph.json`; write `last_synced_commit` anchor
 
 ## Completion Report

@@ -163,7 +163,13 @@ GG 插件面向 Go / Python 后端开发场景，提供覆盖完整开发生命�
 
 **适用场景：** 为大型代码库首次建立持久化知识库，或季度性重建以消除积累的偏差。
 
-扫描全量代码，生成 `.rag/` 目录（L0 全局概览 → L1 子系统 → L2 模块 → L3 核心业务链路 → API 合约 → ADR 索引 → GraphRAG 图）。
+扫描全量代码，生成 `.rag/` 目录（L0 全局概览 → L1 子系统 → L2 模块 → L3 核心业务链路 → API 合约 → ADR 索引 → GraphRAG 图）。每篇 Markdown 须带 YAML frontmatter；`_manifest.json` 须为标准 `documents[]` 注册表。
+
+| 参数 | 作用 |
+|------|------|
+| `--large` | 大仓分阶段 + 人工确认边界 |
+| `--validate` | **完整**校验：manifest schema、frontmatter、图谱格式、Santa 内容审计；须输出审计报告，不能只做死链检查 |
+| `--plan-only` | 仅探测与成本，不写文档 |
 
 > 首次运行后，日常增量更新请用 `/gg:rag-sync`。
 
@@ -173,7 +179,7 @@ GG 插件面向 Go / Python 后端开发场景，提供覆盖完整开发生命�
 
 **适用场景：** 每次完成功能、修复或重构后，保持 `.rag/` 知识库与最新代码同步。
 
-基于 `git diff` 精准识别受影响的 RAG 层，只更新变动部分，速度远快于全量重建。超过 40% 文档需要更新时会建议改跑 `/gg:build-rag`。
+基于 `git diff --name-status` 与 `_manifest.json documents[].source_paths` 精准识别受影响的已有 RAG 文档，只更新业务变更相关内容，并维护 frontmatter、manifest 与 graph 元数据。超过 40% 文档受影响、新子系统或边界变化时，会建议改跑 `/gg:build-rag --system <name>` 或全量构建。
 
 ---
 

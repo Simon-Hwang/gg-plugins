@@ -67,7 +67,7 @@ plugins/gg/
 |---|---|
 | Skills | `using-gg`, `plan-orchestrate`, `iterative-retrieval`, `tdd-workflow`, `verification-loop`, `context-budget`, `agent-introspection-debugging`, `golang-patterns`, `golang-testing`, `python-patterns`, `python-testing` |
 | Agents | `planner`, `architect`, `tdd-guide`, `go-reviewer`, `go-build-resolver`, `python-reviewer`, `build-error-resolver`, `code-reviewer` |
-| Commands | `/gg:plan`, `/gg:go-build`, `/gg:go-test`, `/gg:go-review`, `/gg:python-review`, `/gg:quality-gate` |
+| Commands | `/gg:plan`, `/gg:tdd`, `/gg:build-fix`, `/gg:review` |
 | Rules | `rules/common/`, `rules/golang/`, `rules/python/` |
 
 ### P1 — Backend Engineering, Security, Docs, Release
@@ -76,14 +76,14 @@ plugins/gg/
 |---|---|
 | Skills | `security-review`, `security-scan`, `repo-scan`, `workspace-surface-audit`, `search-first`, `git-workflow`, `database-migrations`, `postgres-patterns`, `mysql-patterns`, `deployment-patterns`, `docker-patterns`, `gg-guide` |
 | Agents | `security-reviewer`, `doc-updater`, `database-reviewer` |
-| Commands | `/gg:security-scan`, `/gg:code-review`, `/gg:test-coverage`, `/gg:update-docs`, `/gg:checkpoint`, `/gg:build-fix` |
+| Commands | `/gg:security-scan`, `/gg:update-docs`, `/gg:checkpoint`, `/gg:build-fix`, `/gg:harness-audit` |
 
 ### P2 — Continuous Learning (Optional)
 
 | Type | Assets |
 |---|---|
 | Skill | `continuous-learning-v2` |
-| Commands | `/gg:learn`, `/gg:learn-eval`, `/gg:instinct-status`, `/gg:evolve`, `/gg:instinct-export`, `/gg:instinct-import`, `/gg:promote`, `/gg:projects` |
+| Commands | `/gg:learn`, `/gg:instinct-status`, `/gg:evolve`, `/gg:instinct-export`, `/gg:instinct-import`, `/gg:promote`, `/gg:projects` |
 | Hooks | `hooks/hooks.json` default guard hooks + `scripts/hooks/skill-hook-dispatcher.js` → `continuous-learning-v2/hooks/hooks.json` → `observe-runner.js` |
 
 ### P2 — Observability & Eval (Optional)
@@ -119,9 +119,9 @@ GG work flows through these gates. Never skip one silently.
 | 0. Route | Classify stack, risk, path | `using-gg`, `workspace-surface-audit`, `iterative-retrieval` |
 | 1. Plan | Confirm requirements and steps | `/gg:plan`, `planner`, `architect` |
 | 2. Orchestrate | Decompose into agent chains | `plan-orchestrate`, `iterative-retrieval` |
-| 3. TDD | RED→GREEN→refactor | `tdd-workflow`, `tdd-guide`, `/gg:go-test` |
-| 4. Verify | Prove implementation works | `verification-loop`, `/gg:go-build`, `/gg:quality-gate` |
-| 5. Review | Quality, security, domain | reviewer agents, `/gg:go-review`, `/gg:python-review`, `/gg:code-review` |
+| 3. TDD | RED→GREEN→refactor | `tdd-workflow`, `tdd-guide`, `/gg:tdd` |
+| 4. Verify | Prove implementation works | `verification-loop`, `/gg:build-fix` |
+| 5. Review | Quality, security, domain | reviewer agents, `/gg:review`, `security-review` |
 | 6. Close | Docs, branch, PR, release | `/gg:update-docs`, `git-workflow`, `deployment-patterns` |
 
 ## Response Style

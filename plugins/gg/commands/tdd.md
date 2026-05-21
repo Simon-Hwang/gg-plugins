@@ -122,5 +122,5 @@ Next: /gg:review to audit implementation quality
 ## Related commands
 
 - `/gg:review` — review implementation after TDD
-- `/gg:build` — fix persistent build errors
+- `/gg:build-fix` — fix persistent build errors
 - `/gg:refactor` — clean up code after tests are green

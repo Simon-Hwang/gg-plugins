@@ -131,8 +131,8 @@ GG plugin scripts require **Node.js** for hook dispatch. The Go and Python toolc
 ```bash
 # Check required runtimes
 node --version     # required for hook scripts (v18+ recommended)
-go version         # required for /gg:go-build, /gg:go-test, /gg:go-review
-python3 --version  # required for /gg:python-review
+go version         # required for /gg:tdd, /gg:build-fix (Go stack)
+python3 --version  # required for /gg:tdd, /gg:build-fix (Python stack)
 
 # Go tools used by GG quality gates
 which govulncheck || go install golang.org/x/vuln/cmd/govulncheck@latest

@@ -12,7 +12,7 @@ The plugin is organized into core components under `plugins/gg/`:
 
 - **agents/** — specialized subagents for delegation (planner, code-reviewer, tdd-guide, go-reviewer, etc.)
 - **skills/** — workflow definitions and domain knowledge (patterns, testing, security, deployment, RAG, observability)
-- **commands/** — slash commands invoked by users (/gg:plan, /gg:go-build, /gg:harness-audit, /gg:build-rag, /gg:rag-sync, etc.)
+- **commands/** — slash commands invoked by users (/gg:plan, /gg:tdd, /gg:build-fix, /gg:review, /gg:harness-audit, /gg:build-rag, /gg:rag-sync, etc.)
 - **hooks/** — Trigger-based automations (continuous-learning-v2 observation hooks)
 - **rules/** — Always-follow guidelines organized by language (common/, golang/, python/)
 - **scripts/** — Node.js utilities for hooks and skill dispatch
@@ -21,17 +21,13 @@ The plugin is organized into core components under `plugins/gg/`:
 
 ### Core Development Flow
 - `/gg:plan` — Implementation planning with planner agent
-- `/gg:go-build` — Go build, vet, lint checks
-- `/gg:go-test` — Go test suite execution
-- `/gg:go-review` — Go-specific code review
-- `/gg:python-review` — Python code review
+- `/gg:tdd` — Test-driven development for Go and Python (RED→GREEN→REFACTOR)
+- `/gg:build-fix` — Fix build, compile, and lint errors (Go / Python / generic)
+- `/gg:review` — Comprehensive code review (language-aware, supports `--pr <N>`)
 
 ### Quality Gates
-- `/gg:quality-gate` — Full quality gate (test + lint + security)
-- `/gg:test-coverage` — Test coverage report and enforcement
 - `/gg:harness-audit` — Deterministic GG harness scorecard for plugin or consumer-project surfaces
 - `/gg:security-scan` — Security vulnerability scan
-- `/gg:code-review` — General code quality review
 
 ### Documentation & Release
 - `/gg:update-docs` — Update README, runbooks, and API docs
@@ -40,8 +36,7 @@ The plugin is organized into core components under `plugins/gg/`:
 - `/gg:checkpoint` — Save session state and progress
 
 ### Continuous Learning
-- `/gg:learn` — Extract patterns from current session
-- `/gg:learn-eval` — Evaluate learned patterns
+- `/gg:learn` — Extract patterns from current session (built-in quality gate)
 - `/gg:instinct-status` — Show active instincts
 - `/gg:evolve` — Evolve and refine instincts
 - `/gg:instinct-export` / `/gg:instinct-import` — Portability
@@ -92,7 +87,7 @@ Skills: `using-gg`, `plan-orchestrate`, `iterative-retrieval`, `tdd-workflow`, `
 
 Rules: `rules/common/`, `rules/golang/`, `rules/python/`
 
-Commands: `/gg:plan`, `/gg:go-build`, `/gg:go-test`, `/gg:go-review`, `/gg:python-review`, `/gg:quality-gate`
+Commands: `/gg:plan`, `/gg:tdd`, `/gg:build-fix`, `/gg:review`
 
 ## Doc Sync Requirement
 

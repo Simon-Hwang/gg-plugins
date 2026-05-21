@@ -179,7 +179,7 @@ Next: /gg:tdd to add a regression test for this issue
 
 ## Related commands
 
-- `/gg:build` — focused build-error-only fixing loop
+- `/gg:build-fix` — focused build-error-only fixing loop
 - `/gg:tdd` — add regression tests after diagnosing a bug
 - `/gg:refactor` — clean up error handling after investigation
 - `/gg:agent-health` — if symptoms suggest the agent harness itself is misconfigured

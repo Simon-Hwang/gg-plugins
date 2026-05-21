@@ -10,7 +10,7 @@ The first version is intentionally Claude Code only. It does not implement a ful
 
 ## What It Provides
 
-- `plugins/gg/commands`: slash commands such as `/gg:plan`, `/gg:go-build`, `/gg:go-test`, `/gg:go-review`, `/gg:python-review`, `/gg:quality-gate`, and `/gg:update-docs`.
+- `plugins/gg/commands`: slash commands such as `/gg:plan`, `/gg:tdd`, `/gg:build-fix`, `/gg:review`, `/gg:ship`, `/gg:security-scan`, and `/gg:update-docs`.
 - `plugins/gg/skills`: workflow skills for orchestration, TDD, verification, security, repo scanning, Go/Python patterns, git workflow, deployment, Docker, and optional continuous learning.
 - `plugins/gg/agents`: agents for planning, architecture, TDD, Go/Python review, build resolution, security, documentation, and database review.
 - `plugins/gg/rules`: common, Go, and Python rules.
