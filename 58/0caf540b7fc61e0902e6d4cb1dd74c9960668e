@@ -1,0 +1,28 @@
+manifests/install-components.json
+  s_09a912834c6cb9::t_a87bd7e6e7d321 99-104
+plugins/gg/skills/brand-voice/SKILL.md
+  s_09a912834c6cb9::t_aa3db79cf9b648 4-34
+plugins/gg/commands/gan-design.md
+  s_09a912834c6cb9::t_acb9069f9ba1dc 40-106
+manifests/install-profiles.json
+  s_09a912834c6cb9::t_3e47d41c5763e1 69-81
+manifests/install-modules.json
+  s_09a912834c6cb9::t_99c80f3d7b7d2e 34,43
+  s_09a912834c6cb9::t_a229d7fcc86f10 225-241
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "580caf540b7fc61e0902e6d4cb1dd74c9960668e",
+  "prompts": {},
+  "sessions": {
+    "s_09a912834c6cb9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74b97b3-e7a4-4d7b-b293-d8a4ff2a88f0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "sawyerhuang <sawyerhuang@tencent.com>"
+    }
+  }
+}
