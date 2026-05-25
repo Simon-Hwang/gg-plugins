@@ -31,7 +31,7 @@
     {
       "id": "agents-core",
       "kind": "agents",
-      "description": "GG specialist agents: planner, architect, tdd-guide, go-reviewer, go-build-resolver, python-reviewer, build-error-resolver, code-reviewer, security-reviewer, doc-updater, database-reviewer, and more.",
+      "description": "GG specialist agents: planner, architect, tdd-guide, go-reviewer, go-build-resolver, python-reviewer, build-error-resolver, code-reviewer, security-reviewer, doc-updater, database-reviewer, plus frontend/design agents (a11y-architect, gan-planner, gan-generator, gan-evaluator), and more.",
       "paths": ["plugins/gg/agents"],
       "defaultInstall": true,
       "cost": "light",
@@ -40,7 +40,7 @@
     {
       "id": "commands-core",
       "kind": "commands",
-      "description": "All /gg: slash commands: /gg:plan, /gg:tdd, /gg:build-fix, /gg:review, /gg:ship, /gg:harness-audit, /gg:security-scan, /gg:update-docs, /gg:learn, and more, plus command runtime scripts.",
+      "description": "All /gg: slash commands: /gg:plan, /gg:tdd, /gg:build-fix, /gg:review, /gg:ship, /gg:harness-audit, /gg:security-scan, /gg:update-docs, /gg:learn, /gg:gan-build, /gg:gan-design, and more, plus command runtime scripts.",
       "paths": ["plugins/gg/commands", "plugins/gg/scripts"],
       "defaultInstall": true,
       "cost": "medium",
@@ -221,6 +221,23 @@
       ],
       "defaultInstall": false,
       "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "skills-frontend",
+      "kind": "skills",
+      "description": "Frontend / UI quality skills (ECC-migrated, framework-agnostic): accessibility (WCAG 2.2 AA audit + semantic ARIA), design-system (token extraction + visual consistency audit), brand-voice (writing voice profile, plus UX-microcopy adaptation note), ui-demo (Playwright-recorded walkthrough videos), dashboard-builder (operator-oriented Grafana/SigNoz boards for OTel-instrumented projects), frontend-slides (zero-dependency animated HTML presentations), gan-style-harness (Generator/Evaluator design-quality loop). Pairs with agents a11y-architect, gan-planner, gan-generator, gan-evaluator and commands /gg:gan-design, /gg:gan-build.",
+      "paths": [
+        "plugins/gg/skills/accessibility",
+        "plugins/gg/skills/design-system",
+        "plugins/gg/skills/brand-voice",
+        "plugins/gg/skills/ui-demo",
+        "plugins/gg/skills/dashboard-builder",
+        "plugins/gg/skills/frontend-slides",
+        "plugins/gg/skills/gan-style-harness"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
       "stability": "stable"
     }
   ]

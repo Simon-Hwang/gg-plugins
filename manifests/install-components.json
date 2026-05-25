@@ -96,6 +96,12 @@
       "family": "capability",
       "description": "Adversarial quality assurance: santa-method (dual independent reviewer agents with verdict gate and convergence loop for semantic verification) and council (four-voice adversarial decision council to surface tradeoffs before committing to a path).",
       "modules": ["skills-adversarial"]
+    },
+    {
+      "id": "capability:frontend",
+      "family": "capability",
+      "description": "Frontend / UI quality (framework-agnostic, originally from ECC): accessibility audit (WCAG 2.2 AA), design-system token extraction, brand voice + UX microcopy guidance, Playwright UI demo recording, OTel-friendly dashboard patterns, zero-dep HTML slide decks, and GAN-style generator/evaluator design harness (with HTMX/Jinja stack-constraint recipe for /gg:gan-design).",
+      "modules": ["skills-frontend"]
     }
   ]
 }

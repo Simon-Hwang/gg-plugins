@@ -66,7 +66,19 @@
         "skills-extended",
         "skills-observability",
         "skills-rag",
-        "skills-adversarial"
+        "skills-adversarial",
+        "skills-frontend"
+      ]
+    },
+    "frontend": {
+      "description": "Frontend / UI quality profile: core baseline + frontend skills (accessibility, design-system, brand-voice, ui-demo, dashboard-builder, frontend-slides, gan-style-harness). Good for Jinja + HTMX, plain HTML, or any framework-agnostic UI work.",
+      "modules": [
+        "rules-core",
+        "agents-core",
+        "commands-core",
+        "hooks-runtime",
+        "skills-workflow",
+        "skills-frontend"
       ]
     }
   }
