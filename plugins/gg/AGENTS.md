@@ -208,10 +208,23 @@ for every rename" mandate.
   valid; the description must clearly tell Claude when to invoke it.
 - Listing it in `AGENTS.md` is encouraged but not required for it to work.
 
-**When you add, rename, or remove a command or skill:**
-- Update `agent.yaml`'s skills/commands lists so manifest-driven installs
-  resolve.
+**When you add, rename, or remove a skill:**
+- Update the relevant `paths` array in `manifests/install-modules.json` so the
+  selective installer does not silently omit the skill.
+- If the skill introduces a new selectable capability, update
+  `manifests/install-components.json`.
+- If it belongs in the complete install, update `manifests/install-profiles.json`.
+
+**When you add, rename, or remove a command:**
+- No install manifest update is needed for individual command files because
+  `commands-core` bulk-copies `commands/`.
 - For thin-shortcut commands, verify the referenced agent still exists.
+
+**When you update Codex compatibility:**
+- Keep `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`,
+  `.mcp.json`, and the `codex-*` adapter skills aligned.
+- Update `skills-codex-adapters` in `manifests/install-modules.json` when adding
+  or removing Codex adapter skills.
 
 See `.claude/rules/doc-sync.md` for additional notes. Avoid maintaining parallel
 agent/command tables across four files just to keep them in lockstep.

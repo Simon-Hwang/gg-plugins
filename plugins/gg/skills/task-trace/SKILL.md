@@ -10,6 +10,17 @@ Use this skill when you need to understand how a GG task actually progressed aft
 
 This is an observability skill, not an execution workflow. It records local trace events through hooks and provides a deterministic inspect command for timeline and summary reports.
 
+## Codex Compatibility
+
+`task-trace` capture depends on GG hook events. In Codex, GG hook entrypoints no-op by default, so trace files may be empty or absent unless Codex hook experiments are explicitly enabled with `GG_ENABLE_CODEX_HOOKS=1`.
+
+When operating in Codex:
+
+- Do not manually invoke Claude Code hooks.
+- Do not assume a timeline exists for the current task.
+- Use the inspect commands only for trace files that already exist.
+- Fall back to the conversation summary and shell history when no Codex trace file is present.
+
 ## What It Captures
 
 `task-trace` writes local JSONL records with schema `gg.task-trace.v1`:
@@ -69,4 +80,3 @@ For deeper compliance measurement, pair trace evidence with `eval-harness` or an
 - `eval-harness`: pass/fail criteria for expected behavior.
 - `agent-introspection-debugging`: structured recovery when an agent loop fails or drifts.
 - `continuous-learning-v2`: separate learning system that writes observations for instincts; `task-trace` intentionally uses an independent trace data file.
-

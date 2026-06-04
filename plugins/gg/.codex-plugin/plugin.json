@@ -1,0 +1,40 @@
+{
+  "name": "gg",
+  "version": "0.1.0+codex.20260604085745",
+  "description": "GG workflow skills for Go and Python software delivery in Codex, adapted from the GG Claude Code plugin suite.",
+  "author": {
+    "name": "GG Plugins"
+  },
+  "homepage": "https://openai.com/",
+  "repository": "https://github.com/openai/openai",
+  "license": "MIT",
+  "keywords": [
+    "go",
+    "golang",
+    "python",
+    "backend",
+    "testing",
+    "review",
+    "security",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "GG",
+    "shortDescription": "Go/Python delivery workflow skills",
+    "longDescription": "GG provides Codex-loadable skills for codebase exploration, planning, TDD, verification, Go and Python patterns, build repair, review, security, documentation, database work, deployment readiness, RAG, observability, and frontend quality workflows. Codex adapter skills route GG command, agent, and rule playbooks from the same source files used by Claude Code. Claude Code slash commands and named agents remain harness-specific runtime assets.",
+    "developerName": "GG Plugins",
+    "category": "Engineering",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Explore this Go codebase with GG",
+      "Plan a safe backend change",
+      "Review my code with GG"
+    ],
+    "brandColor": "#2563EB"
+  }
+}

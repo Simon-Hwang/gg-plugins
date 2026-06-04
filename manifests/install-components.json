@@ -80,6 +80,12 @@
       "modules": ["skills-observability"]
     },
     {
+      "id": "capability:codex",
+      "family": "capability",
+      "description": "Codex adapter skills: route GG slash-command, specialist-agent, rule-pack, and MCP documentation lookup playbooks through Codex skills.",
+      "modules": ["skills-codex-adapters"]
+    },
+    {
       "id": "capability:rag",
       "family": "capability",
       "description": "Repository RAG knowledge base builder for .rag/ layered docs, API contracts, ADR retrieval, and GraphRAG sync support.",

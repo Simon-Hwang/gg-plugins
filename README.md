@@ -2,6 +2,11 @@
 
 `gg-plugins` is a Claude Code plugin suite for lean Go and Python software delivery. It provides a curated subset of agents, skills, commands, and rules optimised for backend Go and Python codebases.
 
+It also includes a Codex-compatible marketplace and plugin manifest so Codex can load the GG
+`skills/` surface from the same repository. Codex adapter skills route the same command, agent,
+rule, and MCP assets that Claude Code uses, while Claude Code slash-command and named-agent runtime
+registration remains harness-specific.
+
 ```text
 requirements -> design -> tasks -> coding -> tests -> verification -> review -> docs -> observability -> release/rollback
 ```
@@ -29,7 +34,7 @@ The first version is intentionally Claude Code only. It does not implement a ful
 
 ### Pick one path only
 
-GG has two install paths — choose one and stick to it:
+GG has two Claude Code install paths — choose one and stick to it:
 
 - **Plugin path (recommended):** install via `claude plugin`, then copy only the rule packs you need.
 - **Selective installer path:** use `install.sh` for fine-grained control or when you want to skip the plugin system entirely.
@@ -90,7 +95,7 @@ cd gg-plugins
 | `core` | 5 | `minimal` + hook dispatcher. |
 | `go` | 8 | `core` + Go rules/skills + security. |
 | `python` | 8 | `core` + Python rules/skills + security. |
-| `full` | 17 | Everything. |
+| `full` | 20 | Everything. |
 
 **Customise with `--with` / `--without`:**
 
@@ -111,7 +116,7 @@ cd gg-plugins
 |---|---|
 | `baseline:*` | `baseline:rules`, `baseline:agents`, `baseline:hooks` |
 | `lang:*` | `lang:python`, `lang:go` |
-| `capability:*` | `capability:security`, `capability:database`, `capability:devops`, `capability:agentic`, `capability:learning`, `capability:observability`, `capability:rag`, `capability:extended` |
+| `capability:*` | `capability:security`, `capability:database`, `capability:devops`, `capability:agentic`, `capability:learning`, `capability:observability`, `capability:codex`, `capability:rag`, `capability:extended` |
 
 ```bash
 # Discover what's available
@@ -137,6 +142,29 @@ cd gg-plugins
 ```text
 /gg:plan
 ```
+
+## Codex Path
+
+Codex support is intentionally skill-led:
+
+- Marketplace: `.agents/plugins/marketplace.json`
+- Codex plugin manifest: `plugins/gg/.codex-plugin/plugin.json`
+- Loaded in Codex: `plugins/gg/skills/`
+- Codex command adapter: `skills/codex-command-router`
+- Codex agent adapter: `skills/codex-agent-router`
+- Codex rule adapter: `skills/codex-rule-router`
+- Codex MCP adapter: `skills/codex-mcp-runtime` + `plugins/gg/.mcp.json`
+- Runtime-specific assets: `plugins/gg/commands/`, `plugins/gg/agents/`, `plugins/gg/hooks/`, and `plugins/gg/rules/` remain the source files used by the adapters
+
+GG hooks are Claude Code runtime assets. Codex may discover plugin hook files from a local plugin root, so GG hook entrypoints no-op by default when they detect a Codex runtime. Set `GG_ENABLE_CODEX_HOOKS=1` only for explicit Codex hook experiments. Claude Code `/compact`, `PreCompact`, and `PostCompact` workflows are not adapted to Codex; use a written handoff summary or a new Codex thread instead.
+
+If this repository is already registered as a local Codex marketplace, install or refresh with:
+
+```bash
+codex plugin add gg@gg-marketplace
+```
+
+Start a new Codex thread after installing or refreshing so the skill list is reloaded.
 
 ## Documentation
 

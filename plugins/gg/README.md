@@ -2,6 +2,22 @@
 
 `gg` is a lean Claude Code development-flow plugin optimised for Go and Python requirement/code development.
 
+This plugin also has a Codex manifest at `.codex-plugin/plugin.json`. In Codex, GG is exposed through
+skills plus adapter skills:
+
+- `codex-command-router` maps `/gg:*` workflows to the source files in `commands/`.
+- `codex-agent-router` maps GG specialist agents to the source files in `agents/`.
+- `codex-rule-router` applies the common, Go, and Python rule packs from `rules/`.
+- `codex-mcp-runtime` exposes the Context7 documentation lookup template through `.mcp.json`.
+
+Claude Code slash-command and named-agent registration remains harness-specific; Codex uses the
+same source files as playbooks.
+
+GG hook automation is also Claude Code-specific. If Codex discovers `hooks/hooks.json` from this
+local plugin root, the hook entrypoints detect Codex and no-op by default. Set
+`GG_ENABLE_CODEX_HOOKS=1` only when deliberately testing Codex hook behavior. Claude Code
+`/compact`, `PreCompact`, and `PostCompact` workflows are not adapted to Codex.
+
 ## Source Policy
 
 The files under `agents/`, `commands/`, `skills/`, and `rules/` follow a curated baseline. Prefer proven workflow files over creating new GG-specific alternatives.

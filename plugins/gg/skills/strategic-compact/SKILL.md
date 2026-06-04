@@ -8,6 +8,17 @@ origin: ECC
 
 Use Claude Code's built-in `/compact` command at logical task boundaries instead of waiting for arbitrary automatic compaction.
 
+## Codex Compatibility
+
+This skill is Claude Code-only. Codex has its own compaction lifecycle, and GG must not invoke Claude Code's `/compact` command or force a Codex remote compact task.
+
+When this skill is mentioned in Codex:
+
+- Do not run `/compact`.
+- Do not trigger a remote compact operation.
+- Write a concise handoff summary in the conversation instead, then suggest starting a new Codex thread when the current context is too large.
+- If Codex auto-compaction fails, treat it as a Codex transport/runtime issue rather than a GG skill execution step.
+
 ## When To Use
 
 Consider compacting when:

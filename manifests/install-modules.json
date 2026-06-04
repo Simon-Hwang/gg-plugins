@@ -201,6 +201,20 @@
       "stability": "beta"
     },
     {
+      "id": "skills-codex-adapters",
+      "kind": "skills",
+      "description": "Codex adapter skills that route GG command, agent, rule, and MCP playbooks from the same source files used by Claude Code.",
+      "paths": [
+        "plugins/gg/skills/codex-command-router",
+        "plugins/gg/skills/codex-agent-router",
+        "plugins/gg/skills/codex-rule-router",
+        "plugins/gg/skills/codex-mcp-runtime"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
       "id": "skills-rag",
       "kind": "skills",
       "description": "RAG knowledge base builder: repo-rag-builder generates .rag/ with layered docs (L0 overview, L1 system, L2 module, L3 chain), OpenAPI contracts, two-level ADR retrieval, and GraphRAG knowledge graph. Pair with /gg:build-rag (full build) and /gg:rag-sync (incremental sync via doc-updater).",

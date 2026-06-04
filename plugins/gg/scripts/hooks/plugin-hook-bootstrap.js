@@ -13,6 +13,14 @@ function readStdinRaw() {
   }
 }
 
+function isCodexRuntime() {
+  return process.env.CODEX_SHELL === '1';
+}
+
+function shouldSkipForCodex() {
+  return isCodexRuntime() && process.env.GG_ENABLE_CODEX_HOOKS !== '1';
+}
+
 function writeStderr(stderr) {
   if (typeof stderr === 'string' && stderr.length > 0) {
     process.stderr.write(stderr);
@@ -110,6 +118,12 @@ function spawnShell(rootDir, relPath, raw, args) {
 function main() {
   const [, , mode, relPath, ...args] = process.argv;
   const raw = readStdinRaw();
+
+  if (shouldSkipForCodex()) {
+    process.stdout.write(raw);
+    process.exit(0);
+  }
+
   const rootDir = process.env.CLAUDE_PLUGIN_ROOT || process.env.GG_PLUGIN_ROOT;
 
   if (!mode || !relPath || !rootDir) {

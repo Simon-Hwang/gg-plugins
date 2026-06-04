@@ -11,15 +11,18 @@ const test = require('node:test');
 const repoRoot = path.join(__dirname, '..');
 const pluginRoot = path.join(repoRoot, 'plugins', 'gg');
 const runner = path.join(pluginRoot, 'scripts', 'hooks', 'run-with-flags.js');
+const bootstrap = path.join(pluginRoot, 'scripts', 'hooks', 'plugin-hook-bootstrap.js');
 
 function runHook(hookId, script, input, env = {}) {
   const raw = typeof input === 'string' ? input : JSON.stringify(input);
+  const baseEnv = { ...process.env };
+  delete baseEnv.CODEX_SHELL;
   return spawnSync(process.execPath, [runner, hookId, script, 'standard,strict'], {
     cwd: repoRoot,
     input: raw,
     encoding: 'utf8',
     env: {
-      ...process.env,
+      ...baseEnv,
       CLAUDE_PLUGIN_ROOT: pluginRoot,
       GG_PLUGIN_ROOT: pluginRoot,
       GG_HOOK_PROFILE: 'standard',
@@ -64,6 +67,74 @@ test('config-protection blocks protected formatter config edits', () => {
       tool_name: 'Write',
       tool_input: { file_path: 'biome.json', content: '{}' },
     },
+  );
+
+  assert.equal(result.status, 2, result.stderr);
+  assert.match(result.stderr, /BLOCKED: Modifying biome\.json is not allowed/);
+  assert.equal(result.stdout, '');
+});
+
+test('GG hook runner no-ops by default in Codex runtime', () => {
+  const input = {
+    tool_name: 'Write',
+    tool_input: { file_path: 'biome.json', content: '{}' },
+  };
+  const result = runHook(
+    'pre:config-protection',
+    'scripts/hooks/config-protection.js',
+    input,
+    { CODEX_SHELL: '1' },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), input);
+  assert.equal(result.stderr, '');
+});
+
+test('GG hook bootstrap no-ops by default in Codex runtime', () => {
+  const input = {
+    tool_name: 'Write',
+    tool_input: { file_path: 'biome.json', content: '{}' },
+  };
+  const raw = JSON.stringify(input);
+  const result = spawnSync(
+    process.execPath,
+    [
+      bootstrap,
+      'node',
+      'scripts/hooks/run-with-flags.js',
+      'pre:config-protection',
+      'scripts/hooks/config-protection.js',
+      'standard,strict',
+    ],
+    {
+      cwd: repoRoot,
+      input: raw,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        CLAUDE_PLUGIN_ROOT: pluginRoot,
+        GG_PLUGIN_ROOT: pluginRoot,
+        CODEX_SHELL: '1',
+      },
+      timeout: 15000,
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), input);
+  assert.equal(result.stderr, '');
+});
+
+test('GG hook runner can be explicitly enabled in Codex runtime', () => {
+  const result = runHook(
+    'pre:config-protection',
+    'scripts/hooks/config-protection.js',
+    {
+      tool_name: 'Write',
+      tool_input: { file_path: 'biome.json', content: '{}' },
+    },
+    { CODEX_SHELL: '1', GG_ENABLE_CODEX_HOOKS: '1' },
   );
 
   assert.equal(result.status, 2, result.stderr);

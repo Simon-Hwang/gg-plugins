@@ -44,6 +44,14 @@ function writeStderr(stderr) {
   process.stderr.write(stderr.endsWith('\n') ? stderr : `${stderr}\n`);
 }
 
+function isCodexRuntime() {
+  return process.env.CODEX_SHELL === '1';
+}
+
+function shouldSkipForCodex() {
+  return isCodexRuntime() && process.env.GG_ENABLE_CODEX_HOOKS !== '1';
+}
+
 function emitHookResult(raw, output) {
   if (typeof output === 'string' || Buffer.isBuffer(output)) {
     process.stdout.write(String(output));
@@ -88,6 +96,11 @@ function getPluginRoot() {
 async function main() {
   const [, , hookId, relScriptPath, profilesCsv] = process.argv;
   const { raw, truncated } = await readStdinRaw();
+
+  if (shouldSkipForCodex()) {
+    process.stdout.write(raw);
+    process.exit(0);
+  }
 
   if (!hookId || !relScriptPath) {
     process.stdout.write(raw);

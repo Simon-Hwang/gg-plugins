@@ -1,0 +1,20 @@
+{
+  "name": "gg-marketplace",
+  "interface": {
+    "displayName": "GG Plugins"
+  },
+  "plugins": [
+    {
+      "name": "gg",
+      "source": {
+        "source": "local",
+        "path": "./plugins/gg"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Engineering"
+    }
+  ]
+}

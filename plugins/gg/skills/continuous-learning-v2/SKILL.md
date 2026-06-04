@@ -12,6 +12,17 @@ An advanced learning system that turns your Claude Code sessions into reusable k
 
 **v2.1** adds **project-scoped instincts** — React patterns stay in your React project, Python conventions stay in your Python project, and universal patterns (like "always validate input") are shared globally.
 
+## Codex Compatibility
+
+This workflow depends on Claude Code hook events for automatic observation. In Codex, GG hook entrypoints no-op by default, so do not register Claude Code hook blocks or assume automatic observations are being collected.
+
+When this skill is mentioned in Codex:
+
+- Treat it as a reference for the learning model and storage format.
+- Do not configure `~/.claude/settings.json` from Codex.
+- Do not rely on live hook capture unless `GG_ENABLE_CODEX_HOOKS=1` has been set deliberately for Codex hook experiments.
+- Prefer a manual session summary or task-trace export as the source material for any learning step.
+
 ## When to Activate
 
 - Setting up automatic learning from Claude Code sessions
