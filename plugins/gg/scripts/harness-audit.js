@@ -173,7 +173,8 @@ function yamlListContains(text, sectionName, value) {
       inSection = line.replace(':', '').trim() === sectionName;
       continue;
     }
-    if (inSection && line.trim() === `- ${value}`) {
+    const item = line.trim().replace(/\s+#.*$/, '');
+    if (inSection && item === `- ${value}`) {
       return true;
     }
   }

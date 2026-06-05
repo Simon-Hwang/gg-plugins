@@ -87,6 +87,28 @@ cd gg-plugins
 ./install.sh --profile python
 ```
 
+If you accidentally stack this path on top of a Claude Code plugin install, undo
+the selective installer output before restarting Claude Code:
+
+```bash
+# Preview first
+./uninstall.sh --dry-run
+
+# Remove the modules recorded by ~/.claude/gg/install-state.json
+./uninstall.sh
+```
+
+If the state file is missing or you want to clean a known selection explicitly:
+
+```bash
+./uninstall.sh --profile go
+./uninstall.sh --all
+```
+
+The uninstaller removes GG files copied by `install.sh` and removes GG-managed
+hook ids from `~/.claude/settings.json`. It preserves non-GG files under shared
+Claude Code directories such as `~/.claude/agents` and `~/.claude/commands`.
+
 **Available profiles:**
 
 | Profile | Modules | Description |

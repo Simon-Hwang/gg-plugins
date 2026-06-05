@@ -14,16 +14,20 @@
     "install:python":          "node scripts/install-apply.js --profile python",
     "install:go":              "node scripts/install-apply.js --profile go",
     "install:full":            "node scripts/install-apply.js --profile full",
-    "install:dry-run":         "node scripts/install-apply.js --profile python --dry-run"
+    "install:dry-run":         "node scripts/install-apply.js --profile python --dry-run",
+    "uninstall:dry-run":       "node scripts/install-clean.js --dry-run",
+    "uninstall:go":            "node scripts/install-clean.js --profile go"
   },
   "bin": {
-    "gg-install": "scripts/install-apply.js"
+    "gg-install": "scripts/install-apply.js",
+    "gg-uninstall": "scripts/install-clean.js"
   },
   "files": [
     "manifests/",
     "plugins/",
     "scripts/",
     "install.sh",
+    "uninstall.sh",
     "README.md",
     "TROUBLESHOOTING.md"
   ],
