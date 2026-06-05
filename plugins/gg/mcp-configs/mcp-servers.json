@@ -4,6 +4,11 @@
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@2.2.5"],
       "description": "Live public documentation lookup for docs-lookup and documentation-lookup."
+    },
+    "codegraph": {
+      "command": "npx",
+      "args": ["-y", "@colbymchenry/codegraph", "serve", "--mcp"],
+      "description": "Code knowledge graph for semantic search, call graphs, and impact analysis. Requires 'npx -y @colbymchenry/codegraph init -i' in project first."
     }
   }
 }
