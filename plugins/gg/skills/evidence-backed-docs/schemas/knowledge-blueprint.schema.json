@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/knowledge-blueprint.schema.json",
+  "type": "object",
+  "required": ["schema_version", "blueprint_id", "domain_profile", "scope", "knowledge_slots", "documents", "context_pack", "policies"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "blueprint_id": {"type": "string", "minLength": 1},
+    "domain_profile": {"type": "string", "minLength": 1},
+    "scope": {"type": "object"},
+    "knowledge_slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "required"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "required": {"type": "boolean"},
+          "accepted_fact_types": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["knowledge_id", "template", "consumes_slots"],
+        "properties": {
+          "knowledge_id": {"type": "string"},
+          "template": {"type": "string"},
+          "target_hint": {"type": "string"},
+          "consumes_slots": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "context_pack": {"type": "object"},
+    "policies": {"type": "object"}
+  },
+  "additionalProperties": true
+}

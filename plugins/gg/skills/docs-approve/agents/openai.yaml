@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs Approve"
+  short_description: "Review and apply approved documentation patches"
+  default_prompt: "Use $docs-approve to review an evidence-backed docs-observe Approval Bundle and apply only explicitly authorized patches."

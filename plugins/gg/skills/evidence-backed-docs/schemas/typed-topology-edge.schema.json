@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/typed-topology-edge.schema.json",
+  "type": "object",
+  "required": ["edge_id", "from", "to", "relation", "claim_refs", "evidence_refs", "source_versions", "verification_status"],
+  "properties": {
+    "edge_id": {"type": "string", "minLength": 1},
+    "from": {"$ref": "#/$defs/node"},
+    "to": {"$ref": "#/$defs/node"},
+    "relation": {"type": "string", "minLength": 1},
+    "contract": {"type": ["string", "null"]},
+    "claim_refs": {"type": "array", "items": {"type": "string", "pattern": "^.+@[1-9][0-9]*$"}},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "source_versions": {"type": "array", "items": {"type": ["string", "object"]}},
+    "verification_status": {"type": "string"}
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": {
+          "enum": ["repository", "service", "rpc", "http", "topic", "storage", "config", "experiment", "external-interface", "business-stage"]
+        },
+        "id": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -92,6 +92,12 @@
       "modules": ["skills-rag"]
     },
     {
+      "id": "capability:evidence-docs",
+      "family": "capability",
+      "description": "Evidence-backed documentation: static claim observation, Blueprint-driven knowledge synthesis, approval-gated transactional publication, runtime-aware maintenance, and explicit evidence degradation.",
+      "modules": ["skills-evidence-docs"]
+    },
+    {
       "id": "capability:extended",
       "family": "capability",
       "description": "Extended skills: API design, ADRs, agent architecture audit, backend patterns, codebase onboarding, coding standards, docs lookup, E2E testing, error handling, hexagonal architecture, MCP server patterns, PyTorch, Redis, repo scan, team builder.",

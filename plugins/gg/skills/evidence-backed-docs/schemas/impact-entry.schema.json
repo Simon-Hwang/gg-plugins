@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/impact-entry.schema.json",
+  "type": "object",
+  "required": ["impact_id", "knowledge_id", "slot_ids", "claim_refs", "evidence_refs", "repository_ids", "symbols"],
+  "properties": {
+    "impact_id": {"type": "string", "minLength": 1},
+    "knowledge_id": {"type": "string", "minLength": 1},
+    "slot_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "claim_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "repository_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "symbols": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "additionalProperties": true
+}

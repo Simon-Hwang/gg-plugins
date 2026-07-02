@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/synthesis-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "synthesis_id", "status", "verification_status", "findings", "freshness", "artifacts"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "synthesis_id": {"type": "string"},
+    "status": {"enum": ["draft", "awaiting-approval", "approved", "stale"]},
+    "verification_status": {"type": "string"},
+    "findings": {"type": "array"},
+    "freshness": {
+      "type": "object",
+      "required": ["claim_revisions_current", "source_versions_current"],
+      "properties": {
+        "claim_revisions_current": {"type": "boolean"},
+        "source_versions_current": {"type": "boolean"}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["change_id", "knowledge_id", "change_type", "source", "statements", "target"],
+        "properties": {
+          "change_id": {"type": "string"},
+          "knowledge_id": {"type": "string"},
+          "change_type": {"enum": ["create", "replace", "merge", "redirect", "archive", "metadata-only"]},
+          "source": {"type": "string"},
+          "statements": {"type": "string"},
+          "target": {"type": "string"},
+          "base_hash": {"type": ["string", "null"]}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

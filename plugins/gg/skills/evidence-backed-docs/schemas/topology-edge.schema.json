@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/topology-edge.schema.json",
+  "type": "object",
+  "required": ["edge_id", "from_repository", "to_repository", "evidence_refs", "source_versions"],
+  "properties": {
+    "edge_id": {"type": "string", "minLength": 1},
+    "from_repository": {"type": "string", "minLength": 1},
+    "to_repository": {"type": "string", "minLength": 1},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "source_versions": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "additionalProperties": true
+}

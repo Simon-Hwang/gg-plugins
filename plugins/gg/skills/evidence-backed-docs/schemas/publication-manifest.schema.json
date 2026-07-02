@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/publication-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "publication_id", "synthesis_id", "policy_id", "approval_id", "bundle_hash", "status", "artifacts"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "publication_id": {"type": "string"},
+    "synthesis_id": {"type": "string"},
+    "policy_id": {"type": "string"},
+    "approval_id": {"type": "string"},
+    "bundle_hash": {"type": "string"},
+    "status": {"enum": ["published", "rolled-back", "validation-failed", "superseded"]},
+    "artifacts": {"type": "array"}
+  },
+  "additionalProperties": true
+}

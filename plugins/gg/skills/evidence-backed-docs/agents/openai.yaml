@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence-backed Docs"
+  short_description: "Build auditable claim-to-evidence documentation workflows"
+  default_prompt: "Use evidence-backed docs to validate claims and route Agent-facing knowledge through the Registry, Domain Manifest, and stable evidence coordinates."

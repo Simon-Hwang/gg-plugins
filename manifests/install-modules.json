@@ -226,6 +226,22 @@
       "stability": "beta"
     },
     {
+      "id": "skills-evidence-docs",
+      "kind": "skills",
+      "description": "Evidence-backed documentation protocols and Codex-native workflows: auditable Claim/Evidence/Verdict/Finding stores, static observation, approval-gated candidate patch application, Blueprint-driven synthesis, transactional publication, runtime-aware maintenance, and deterministic indexing.",
+      "paths": [
+        "plugins/gg/skills/evidence-backed-docs",
+        "plugins/gg/skills/docs-observe",
+        "plugins/gg/skills/docs-synthesize",
+        "plugins/gg/skills/docs-approve",
+        "plugins/gg/skills/docs-publish",
+        "plugins/gg/skills/docs-maintain"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "beta"
+    },
+    {
       "id": "skills-adversarial",
       "kind": "skills",
       "description": "Adversarial verification and decision council: santa-method (dual independent reviewer agents with convergence loop — use before shipping production code, migrations, or public APIs) and council (four-voice adversarial decision council for architecture and strategy choices).",

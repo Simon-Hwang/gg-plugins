@@ -50,6 +50,13 @@ Docs, lookup, and operations:
 
 - `doc-updater` -> `../../agents/doc-updater.md`
 - `docs-lookup` -> `../../agents/docs-lookup.md`
+- `evidence-claim-analyst` -> `../../agents/evidence-claim-analyst.md`
+- `evidence-verdict-reviewer` -> `../../agents/evidence-verdict-reviewer.md`
+- `knowledge-architect` -> `../../agents/knowledge-architect.md`
+- `evidence-knowledge-writer` -> `../../agents/evidence-knowledge-writer.md`
+- `knowledge-synthesis-reviewer` -> `../../agents/knowledge-synthesis-reviewer.md`
+- `knowledge-publish-planner` -> `../../agents/knowledge-publish-planner.md`
+- `semantic-diff-reviewer` -> `../../agents/semantic-diff-reviewer.md`
 - `e2e-runner` -> `../../agents/e2e-runner.md`
 - `loop-operator` -> `../../agents/loop-operator.md`
 

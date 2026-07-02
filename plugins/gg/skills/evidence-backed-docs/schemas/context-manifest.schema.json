@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/context-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "synthesis_id", "knowledge_ids", "claim_refs", "subject_ids", "repository_ids", "evidence_ids", "slot_ids", "observation_request_ids", "finding_ids", "source_versions"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "synthesis_id": {"type": "string"},
+    "blueprint_id": {"type": "string"},
+    "scope": {"type": "object"},
+    "knowledge_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "claim_refs": {"type": "array", "items": {"type": "string", "pattern": "^.+@[1-9][0-9]*$"}, "minItems": 1},
+    "subject_ids": {"type": "array", "items": {"type": "string"}},
+    "repository_ids": {"type": "array", "items": {"type": "string"}},
+    "evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "slot_ids": {"type": "array", "items": {"type": "string"}},
+    "observation_request_ids": {"type": "array", "items": {"type": "string"}},
+    "finding_ids": {"type": "array", "items": {"type": "string"}},
+    "source_versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "version", "current"],
+        "properties": {
+          "source": {"type": "string"},
+          "version": {"type": "string"},
+          "current": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

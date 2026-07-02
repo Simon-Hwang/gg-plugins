@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/claim.schema.json",
+  "type": "object",
+  "required": ["schema_version", "id", "revision", "statement", "fact_type", "risk", "scope", "source"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 3},
+    "revision": {"type": "integer", "minimum": 1},
+    "statement": {"type": "string", "minLength": 1},
+    "fact_type": {"enum": ["business-intent", "design-decision", "static-implementation", "runtime-observation"]},
+    "risk": {"enum": ["critical", "high", "medium", "low"]},
+    "scope": {"type": "object"},
+    "source": {
+      "type": "object",
+      "required": ["document", "section"],
+      "properties": {
+        "document": {"type": "string"},
+        "section": {"type": "string"}
+      }
+    },
+    "status": {"enum": ["active", "superseded", "deprecated"]},
+    "superseded_by": {"type": ["string", "null"]},
+    "deprecation_reason": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "superseded"}}}, "then": {"required": ["superseded_by"]}},
+    {"if": {"properties": {"status": {"const": "deprecated"}}}, "then": {"required": ["deprecation_reason"]}}
+  ],
+  "additionalProperties": true
+}

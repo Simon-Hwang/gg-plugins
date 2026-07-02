@@ -67,6 +67,7 @@
         "skills-observability",
         "skills-codex-adapters",
         "skills-rag",
+        "skills-evidence-docs",
         "skills-adversarial",
         "skills-frontend"
       ]

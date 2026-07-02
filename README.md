@@ -138,7 +138,7 @@ Claude Code directories such as `~/.claude/agents` and `~/.claude/commands`.
 |---|---|
 | `baseline:*` | `baseline:rules`, `baseline:agents`, `baseline:hooks` |
 | `lang:*` | `lang:python`, `lang:go` |
-| `capability:*` | `capability:security`, `capability:database`, `capability:devops`, `capability:agentic`, `capability:learning`, `capability:observability`, `capability:codex`, `capability:rag`, `capability:extended` |
+| `capability:*` | `capability:security`, `capability:database`, `capability:devops`, `capability:agentic`, `capability:learning`, `capability:observability`, `capability:codex`, `capability:rag`, `capability:evidence-docs`, `capability:extended` |
 
 ```bash
 # Discover what's available

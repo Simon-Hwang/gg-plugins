@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/domain-profile.schema.json",
+  "type": "object",
+  "required": ["profile_version", "profile_id", "document_roots", "repository_roots", "finding_sink"],
+  "properties": {
+    "profile_version": {"const": "1"},
+    "profile_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
+    "document_roots": {"type": "array", "items": {"type": "string"}},
+    "source_roots": {"type": "array", "items": {"type": "string"}},
+    "repository_roots": {"type": "array", "items": {"type": "string"}},
+    "claim_policies": {"type": "object"},
+    "authority_rules": {"type": "object"},
+    "repository_resolvers": {"type": "array"},
+    "adapter_requirements": {"type": "object"},
+    "finding_sink": {"type": "string"}
+  },
+  "additionalProperties": true
+}

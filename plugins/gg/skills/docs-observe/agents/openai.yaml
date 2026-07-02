@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs Observe"
+  short_description: "Map document claims to static implementation evidence"
+  default_prompt: "Observe this documentation set and produce evidence-backed static verdicts."

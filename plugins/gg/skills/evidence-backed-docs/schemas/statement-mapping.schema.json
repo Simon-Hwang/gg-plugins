@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/statement-mapping.schema.json",
+  "type": "object",
+  "required": ["statement_id", "type", "text", "text_hash"],
+  "properties": {
+    "statement_id": {"type": "string", "minLength": 1},
+    "type": {"enum": ["fact", "intent", "gap", "heading", "example"]},
+    "text": {"type": "string", "minLength": 1},
+    "text_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "claim_refs": {"type": "array", "items": {"type": "string"}}
+  },
+  "if": {"properties": {"type": {"const": "fact"}}},
+  "then": {"required": ["claim_refs"], "properties": {"claim_refs": {"minItems": 1}}},
+  "additionalProperties": true
+}

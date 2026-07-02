@@ -33,6 +33,7 @@ The files under `agents/`, `commands/`, `skills/`, and `rules/` follow a curated
 6. DB-impacting work uses `database-reviewer`, `database-migrations`, `postgres-patterns`, or `mysql-patterns`.
 7. `/gg:security-scan` and `verification-loop` provide evidence gates.
 8. `/gg:update-docs`, `doc-updater`, `deployment-patterns`, and `docker-patterns` support documentation and release readiness.
+9. `/gg:docs-observe`, `/gg:docs-synthesize`, `/gg:docs-publish`, and `/gg:docs-maintain` keep fact discovery, knowledge compilation, approval-gated publication, and revalidation as peer workflows.
 
 ## P0 Assets
 
@@ -50,6 +51,20 @@ P1 completes backend engineering, security, documentation, and release readiness
 - Agents: `security-reviewer`, `doc-updater`, `database-reviewer`
 - Skills: `security-review`, `security-scan`, `repo-scan`, `workspace-surface-audit`, `search-first`, `git-workflow`, `database-migrations`, `postgres-patterns`, `mysql-patterns`, `deployment-patterns`, `docker-patterns`
 - Commands: `/gg:security-scan`, `/gg:harness-audit`, `/gg:update-docs`, `/gg:checkpoint`
+
+## Evidence-backed Docs (Optional)
+
+Install via `capability:evidence-docs`. It adds the shared `evidence-backed-docs`
+protocol; peer `docs-observe`, `docs-synthesize`, `docs-publish`, and
+`docs-maintain` lifecycle skills; the `docs-approve` Codex transition skill;
+Claim, synthesis, publication, and Verdict reviewer agents; GG compatibility
+commands; and the deterministic `scripts/gg-evidence` CLI. Codex users can
+invoke `$docs-approve` or natural-language approval requests without native
+Slash Prompt support.
+
+`docs-synthesize` consumes validated ledgers and a caller-provided Knowledge Blueprint to produce drafts and a mandatory Agent Context Pack. `docs-publish` consumes an approved Bundle and caller-provided Publication Policy; it never generates narrative and writes only through deterministic hash-gated operations.
+
+RAG remains an optional retrieval accelerator. Generated RAG prose is never accepted as final evidence, and missing runtime adapters force explicit `unknown`, `partial`, or `requires-runtime-evidence` degradation.
 
 ## P2 Observability & Eval (Optional)
 

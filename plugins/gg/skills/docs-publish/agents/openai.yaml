@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs Publish"
+  short_description: "Publish approved knowledge bundles transactionally"
+  default_prompt: "Publish an approved bundle into an immutable Knowledge domain, atomically updating its Manifest, Registry, and optional thin Wiki Gateway."

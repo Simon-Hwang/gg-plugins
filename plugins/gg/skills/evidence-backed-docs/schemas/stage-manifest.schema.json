@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/stage-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "stage_id", "synthesis_id", "bundle_hash", "policy_hash", "approval_hash", "staged_tree_hash", "gates", "status", "artifacts"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "stage_id": {"type": "string"},
+    "synthesis_id": {"type": "string"},
+    "bundle_hash": {"type": "string"},
+    "policy_hash": {"type": "string"},
+    "approval_hash": {"type": "string"},
+    "staged_tree_hash": {"type": "string"},
+    "status": {"enum": ["awaiting-semantic-review", "ready-to-apply", "applied"]},
+    "gates": {"type": "object"},
+    "artifacts": {"type": "array"}
+  },
+  "additionalProperties": true
+}

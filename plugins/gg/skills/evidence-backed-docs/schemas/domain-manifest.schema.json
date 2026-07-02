@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/domain-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "domain_id", "current_publication_id", "publication_manifest", "verification_status", "scope", "knowledge", "context", "source_versions", "freshness", "supersedes"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "domain_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "current_publication_id": {"type": "string", "minLength": 1},
+    "publication_manifest": {"type": "string", "pattern": "^evidence/publications/[^/]+/publication-manifest\\.json$"},
+    "verification_status": {"type": "string"},
+    "scope": {"type": "object"},
+    "knowledge": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string"}
+    },
+    "context": {
+      "type": "object",
+      "required": ["manifest", "retrieval_cards", "topology", "impact_index", "gaps"],
+      "properties": {
+        "manifest": {"type": "string"},
+        "retrieval_cards": {"type": "string"},
+        "topology": {"type": "string"},
+        "impact_index": {"type": "string"},
+        "gaps": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "source_versions": {"type": "array", "items": {"type": "object"}},
+    "freshness": {"type": "object"},
+    "supersedes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

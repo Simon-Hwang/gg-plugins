@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/semantic-review.schema.json",
+  "type": "object",
+  "required": ["schema_version", "stage_id", "staged_tree_hash", "verdict", "reviewer"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "stage_id": {"type": "string"},
+    "staged_tree_hash": {"type": "string"},
+    "verdict": {"const": "pass"},
+    "reviewer": {"type": "string"}
+  },
+  "additionalProperties": true
+}

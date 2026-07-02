@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/approval-decision.schema.json",
+  "type": "object",
+  "required": ["schema_version", "approval_id", "synthesis_id", "bundle_hash", "status", "approved_at", "approvers", "decisions"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "approval_id": {"type": "string"},
+    "synthesis_id": {"type": "string"},
+    "bundle_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "status": {"const": "approved"},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "approvers": {"type": "array", "items": {"type": "object", "required": ["role", "identity"]}},
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["change_id", "decision"],
+        "properties": {
+          "change_id": {"type": "string"},
+          "decision": {"enum": ["approve", "reject", "defer"]}
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

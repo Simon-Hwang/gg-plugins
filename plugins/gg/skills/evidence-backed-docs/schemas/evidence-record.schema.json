@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/evidence-record.schema.json",
+  "type": "object",
+  "required": ["schema_version", "id", "type", "subject", "provenance", "scope", "observed_at", "source_version", "content_hash", "confidence"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string"},
+    "type": {"type": "string"},
+    "subject": {"type": "string"},
+    "provenance": {"type": "object"},
+    "scope": {"type": "object"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "source_version": {"type": "string"},
+    "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+  },
+  "additionalProperties": true
+}

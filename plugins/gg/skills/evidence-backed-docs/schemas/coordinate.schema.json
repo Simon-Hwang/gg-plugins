@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/coordinate.schema.json",
+  "title": "Evidence-backed stable coordinate",
+  "type": "string",
+  "oneOf": [
+    {"pattern": "^knowledge://[a-z0-9][a-z0-9-]*/[^@/]+@[^@/]+$"},
+    {"pattern": "^claim://[^@/]+@[1-9][0-9]*$"},
+    {"pattern": "^evidence://[^/]+$"},
+    {"pattern": "^finding://[^/]+$"},
+    {"pattern": "^code://[^@/]+@[^/]+/[^#]+(?:#.+)?$"}
+  ]
+}

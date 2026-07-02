@@ -1,6 +1,6 @@
 {
   "name": "gg",
-  "version": "0.1.0+codex.20260604085745",
+  "version": "0.1.0+codex.20260702103747",
   "description": "GG workflow skills for Go and Python software delivery in Codex, adapted from the GG Claude Code plugin suite.",
   "author": {
     "name": "GG Plugins"

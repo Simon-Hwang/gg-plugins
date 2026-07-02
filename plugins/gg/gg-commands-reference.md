@@ -183,6 +183,31 @@ GG 插件面向 Go / Python 后端开发场景，提供覆盖完整开发生命�
 
 ---
 
+### `/gg:docs-observe` — 静态文档事实审计
+
+**适用场景：** 从业务文档提取原子 Claim，并用固定 commit 的代码、配置、IDL、Schema 和测试建立可复现的静态 Evidence/Verdict。不会声称线上版本、实际生效配置、实验覆盖或真实流量。
+
+### `/gg:docs-synthesize` — 证据化知识合成
+
+**适用场景：** 根据 Domain Profile 和 Knowledge Blueprint，将已验证 Claim/Evidence/Verdict/Mapping 编译为知识草稿、Topology、Impact Index、Retrieval Card 和 Gap。只写 Synthesis Bundle，不发布正式知识。
+
+### `/gg:docs-publish` — 审批后知识发布
+
+**适用场景：** 根据 Publication Policy 验证 Bundle hash、审批角色、change_id、目标范围和 base hash，并以确定性文件操作发布知识与 Agent Context Pack。支持计划、应用、状态校验和安全回滚，不在发布阶段生成内容。
+
+### `/gg:docs-maintain` — 文档事实持续维护
+
+**适用场景：** 按 Claim、文档、领域、Git 变更或全量范围重验已有事实链。每次先执行 capability preflight；缺少运行 Adapter 时显式降级。
+
+### `/gg:docs-index` 与 `/gg:docs-approve`
+
+`docs-index` 负责可删除 SQLite 索引的重建、校验和查询。Codex 不依赖
+原生 Slash Prompt；`/gg:docs-approve` 文本由命令路由器转到
+`$docs-approve` Skill，后者默认只审查候选补丁，仅应用明确授权的条目，
+并在应用后重新验证 Claim、Verdict 和 Finding。
+
+---
+
 ## 四、Agent 基础设施命令
 
 ### `/gg:orchestrate` — 顺序 Agent 链编排

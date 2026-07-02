@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/retrieval-card.schema.json",
+  "type": "object",
+  "required": ["retrieval_id", "knowledge_ids", "claim_refs", "subject_ids"],
+  "properties": {
+    "retrieval_id": {"type": "string", "minLength": 1},
+    "knowledge_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "claim_refs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "subject_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

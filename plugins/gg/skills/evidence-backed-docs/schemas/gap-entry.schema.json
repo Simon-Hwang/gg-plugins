@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/gap-entry.schema.json",
+  "type": "object",
+  "required": ["gap_id", "slot_id"],
+  "properties": {
+    "gap_id": {"type": "string", "minLength": 1},
+    "slot_id": {"type": "string", "minLength": 1},
+    "observation_request_id": {"type": "string"},
+    "finding_id": {"type": "string"}
+  },
+  "anyOf": [
+    {"required": ["observation_request_id"]},
+    {"required": ["finding_id"]}
+  ],
+  "additionalProperties": true
+}
