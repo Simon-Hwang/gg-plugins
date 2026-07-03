@@ -32,6 +32,22 @@
           "base_hash": {"type": ["string", "null"]}
         }
       }
+    },
+    "review_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["review_id", "source", "covers_knowledge_ids"],
+        "properties": {
+          "review_id": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "minLength": 1},
+          "covers_knowledge_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        }
+      }
     }
   },
   "additionalProperties": true

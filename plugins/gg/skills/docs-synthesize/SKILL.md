@@ -7,7 +7,12 @@ description: Compile validated Claim, Evidence, Verdict, Finding, mapping, and r
 
 Operate as a peer of `docs-observe`, `docs-publish`, and `docs-maintain`. Consume their shared evidence protocol directly; do not invoke or extend their responsibilities.
 
-Read [references/knowledge-contract.md](references/knowledge-contract.md) and [references/verdict-rendering-policy.md](references/verdict-rendering-policy.md) before drafting. Read [references/context-pack-contract.md](references/context-pack-contract.md) before generating Agent artifacts.
+Read [references/knowledge-contract.md](references/knowledge-contract.md),
+[references/review-draft-contract.md](references/review-draft-contract.md), and
+[references/verdict-rendering-policy.md](references/verdict-rendering-policy.md)
+before drafting. Read
+[references/context-pack-contract.md](references/context-pack-contract.md)
+before generating Agent artifacts.
 
 ## Required inputs
 
@@ -34,23 +39,28 @@ scripts/gg-evidence --root <root> index validate
 3. Stop when coverage policy blocks synthesis; generate an explicitly partial Bundle only when the Blueprint permits it.
 4. Classify latest Claim revisions as assertable, constrained, or gap-only.
 5. Ask `knowledge-architect` to map Blueprint slots into documents without inventing a domain structure.
-6. Ask `evidence-knowledge-writer` to draft only from eligible Claim revisions,
-   using readable Evidence anchors instead of inline Claim/Verdict dumps.
-7. Build the mandatory Context Pack: manifest, bilingual/task-aware retrieval
+6. Ask `evidence-knowledge-writer` to generate compact publishable
+   `agent-knowledge/` documents from eligible Claim revisions.
+7. Derive richer `review-drafts/` from Agent Knowledge and the Context Pack.
+   Prefer diagrams, matrices, scenario walkthroughs, and grouped confirmations
+   when they improve comprehension; do not impose presentation quotas.
+8. Build the mandatory Context Pack: manifest, bilingual/task-aware retrieval
    cards, typed topology, distributed impact index, and slot-specific gaps.
-8. Build statement sidecars that bind every factual paragraph hash to existing
+9. Build statement sidecars that bind every factual Agent Knowledge paragraph to existing
    Claim revisions and stable Coordinates.
-9. Evaluate the configured golden tasks. Every Knowledge ID must be reachable
+10. Evaluate the configured golden tasks. Every Knowledge ID must be reachable
    and the Domain/Knowledge retrieval thresholds must pass.
-10. Ask `knowledge-synthesis-reviewer` to check template coverage, unsupported
-    statements, type abuse, Verdict escalation, cross-document consistency,
-    mapping integrity, and retrieval usefulness.
-11. Validate the complete Bundle and generate an Approval Bundle.
+11. Ask `knowledge-synthesis-reviewer` to check publishable knowledge,
+    review-to-knowledge consistency, unsupported statements, Verdict
+    escalation, mapping integrity, and retrieval usefulness.
+12. Validate the complete Bundle and generate an Approval Bundle that routes
+    reviewers through review drafts while binding decisions to publishable
+    change IDs.
 
 ## Hard rules
 
 - Never read code to create a new Verdict. Return missing facts as Observation Requests.
-- Every factual paragraph must trace to a Claim ID and revision through its
+- Every factual paragraph in Agent Knowledge must trace to a Claim ID and revision through its
   sidecar. Human prose uses compact `[E<n>]` anchors and an `Evidence anchors`
   section, not raw Claim/Verdict payloads.
 - Coverage accepts structured EligibleClaim records only; a Claim must be current,
@@ -65,6 +75,10 @@ scripts/gg-evidence --root <root> index validate
 - `example` records require `non_factual: true` and cannot contain Claim or
   Evidence markers. `gap` records describe unknowns only and cannot smuggle in
   supported facts.
+- Review drafts are non-authoritative projections. They must declare the
+  Knowledge IDs they cover and cannot introduce facts absent from those
+  publishable documents. Semantic feedback must update Agent Knowledge first;
+  only presentation edits may remain review-only.
 - Cover every template-required section, every Blueprint slot, and every
   Knowledge ID route. Block process metadata such as `awaiting-approval`,
   `publication_allowed`, Stage state, or Approval state from business prose.
@@ -73,7 +87,8 @@ scripts/gg-evidence --root <root> index validate
 
 ## Completion
 
-Complete only when Blueprint coverage is reported, all drafts pass template,
-traceability, consistency, and retrieval checks, the Context Pack is complete,
-unsupported statements and dangling Coordinates are zero, and an
-approval-ready Synthesis Bundle exists.
+Complete only when Blueprint coverage is reported, Agent Knowledge passes
+traceability and retrieval checks, all required review drafts map to the
+publishable Knowledge IDs, the Context Pack is complete, unsupported
+statements and dangling Coordinates are zero, and an approval-ready Synthesis
+Bundle exists.

@@ -7,7 +7,7 @@ artifacts:
   - change_id: create-overview
     knowledge_id: knowledge-overview
     change_type: create
-    source: drafts/overview.md
+    source: agent-knowledge/overview.md
     statements: statements/knowledge-overview.jsonl
     target: knowledge/domains/{domain_id}/publications/{publication_id}/docs/overview.md
     base_hash: null
@@ -19,6 +19,10 @@ distinct planning, staging, validation, apply, and rollback semantics. A
 generic file copy is never a valid implementation of those semantics. All
 source and target paths must be relative. Targets must remain under Publication
 Policy `allowed_roots`.
+
+`review_artifacts[]` and `review-drafts/**` are hash-bound approval aids, not
+publication artifacts. The executor ignores them. Only `artifacts[]` sourced
+from `agent-knowledge/**` may become canonical Knowledge narrative.
 
 Policy must declare:
 

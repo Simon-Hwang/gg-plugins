@@ -834,6 +834,76 @@ test("Blueprint-bound synthesis cannot validate without its Blueprint", () => {
   assert.match(result.stdout, /--blueprint is required/);
 });
 
+test("human review drafts are required and remain separate from publishable knowledge", () => {
+  const { root, bundle, policy, approval, blueprint } =
+    createKnowledgePublicationFixture();
+  const blueprintValue = JSON.parse(fs.readFileSync(blueprint));
+  blueprintValue.review_documents = [{
+    review_id: "example-review",
+    template: "review-templates/overview.md",
+    target_hint: "review-drafts/overview.md",
+    covers_knowledge_ids: ["example-overview"],
+    required_sections: [
+      "一分钟结论", "业务全景图", "关键决策表", "待确认事项",
+      "Knowledge sources",
+    ],
+  }];
+  blueprintValue.policies.require_review_drafts = true;
+  writeJson(blueprint, blueprintValue);
+  fs.mkdirSync(path.join(bundle, "review-drafts"), { recursive: true });
+  fs.writeFileSync(path.join(bundle, "review-drafts/overview.md"), [
+    "# Human review",
+    "## 一分钟结论",
+    "## 业务全景图",
+    "## 关键决策表",
+    "## 待确认事项",
+    "## Knowledge sources",
+    "",
+  ].join("\n"));
+  const manifestPath = path.join(bundle, "synthesis-manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath));
+  fs.mkdirSync(path.join(bundle, "agent-knowledge"), { recursive: true });
+  fs.copyFileSync(
+    path.join(bundle, "drafts/overview.md"),
+    path.join(bundle, "agent-knowledge/overview.md"),
+  );
+  manifest.artifacts[0].source = "agent-knowledge/overview.md";
+  manifest.review_artifacts = [{
+    review_id: "example-review",
+    source: "review-drafts/overview.md",
+    covers_knowledge_ids: ["example-overview"],
+  }];
+  writeJson(manifestPath, manifest);
+  fs.appendFileSync(path.join(bundle, "approval-bundle.md"),
+    "\n- review_id: example-review\n");
+  const approvalValue = JSON.parse(fs.readFileSync(approval));
+  approvalValue.bundle_hash = bundleFingerprint(bundle);
+  writeJson(approval, approvalValue);
+
+  let result = run([
+    "--bundle", bundle, "--blueprint", blueprint, "synthesis", "validate",
+  ]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  result = run([
+    "--root", root, "--policy", policy, "--bundle", bundle,
+    "--blueprint", blueprint, "--approval", approval,
+    "publications", "plan", "--publication-id", "publication-knowledge",
+  ]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const plan = JSON.parse(result.stdout).data.plan;
+  assert.equal(plan.artifacts.some((item) =>
+    item.target.includes("review-drafts")), false);
+
+  fs.writeFileSync(path.join(bundle, "review-drafts/overview.md"),
+    "# Human review\n\n## 一分钟结论\n");
+  result = run([
+    "--bundle", bundle, "--blueprint", blueprint, "synthesis", "validate",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /review draft required section missing: 业务全景图/);
+});
+
 test("stage tree changes after semantic review block apply", () => {
   const { root, bundle, policy, approval } = createPublicationFixture();
   let result = run(["--root", root, "--policy", policy, "--bundle", bundle,

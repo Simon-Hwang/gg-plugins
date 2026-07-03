@@ -130,6 +130,53 @@ def validate_blueprint(value: dict[str, Any], path: Path | None = None) -> list[
                 errors.append(
                     f"{prefix}documents[{index}] consumes unknown slot {slot_id}"
                 )
+    review_documents = value.get("review_documents", [])
+    if not isinstance(review_documents, list):
+        errors.append(f"{prefix}review_documents must be a list")
+        review_documents = []
+    review_ids: set[str] = set()
+    reviewed_knowledge_ids: set[str] = set()
+    for index, document in enumerate(review_documents):
+        if not isinstance(document, dict):
+            errors.append(f"{prefix}review_documents[{index}] must be an object")
+            continue
+        review_id = document.get("review_id")
+        if not review_id:
+            errors.append(f"{prefix}review_documents[{index}].review_id is required")
+        elif review_id in review_ids:
+            errors.append(f"{prefix}duplicate review_id {review_id}")
+        else:
+            review_ids.add(str(review_id))
+        sections = document.get("required_sections", [])
+        if not isinstance(sections, list) or not sections:
+            errors.append(
+                f"{prefix}review_documents[{index}].required_sections "
+                "must be a non-empty list"
+            )
+        covers = document.get("covers_knowledge_ids", [])
+        if not isinstance(covers, list) or not covers:
+            errors.append(
+                f"{prefix}review_documents[{index}].covers_knowledge_ids "
+                "must be a non-empty list"
+            )
+            continue
+        for knowledge_id in covers:
+            if knowledge_id not in knowledge_ids:
+                errors.append(
+                    f"{prefix}review_documents[{index}] covers unknown "
+                    f"knowledge_id {knowledge_id}"
+                )
+            else:
+                reviewed_knowledge_ids.add(str(knowledge_id))
+    if value.get("policies", {}).get("require_review_drafts"):
+        if not review_documents:
+            errors.append(f"{prefix}review_documents are required by policy")
+        missing_reviews = sorted(knowledge_ids - reviewed_knowledge_ids)
+        if missing_reviews:
+            errors.append(
+                f"{prefix}review drafts do not cover knowledge_ids: "
+                f"{', '.join(missing_reviews)}"
+            )
     context_pack = value.get("context_pack", {})
     if not isinstance(context_pack, dict):
         errors.append(f"{prefix}context_pack must be an object")
@@ -574,6 +621,61 @@ def validate_synthesis_bundle(
                     errors.append(
                         f"{artifact.get('source')}: Blueprint required section missing: {section}"
                     )
+        review_documents = blueprint.get("review_documents", [])
+        if blueprint.get("policies", {}).get("require_review_drafts"):
+            for artifact in artifacts:
+                source = str(artifact.get("source", ""))
+                if artifact.get("kind", "knowledge") == "knowledge" and not source.startswith(
+                    "agent-knowledge/"
+                ):
+                    errors.append(
+                        f"{source}: publishable knowledge must be sourced "
+                        "from agent-knowledge/"
+                    )
+            review_artifacts = manifest.get("review_artifacts", [])
+            if not isinstance(review_artifacts, list):
+                errors.append("synthesis manifest review_artifacts must be a list")
+                review_artifacts = []
+            review_by_id = {
+                item.get("review_id"): item
+                for item in review_artifacts if isinstance(item, dict)
+            }
+            for review_document in review_documents:
+                review_id = review_document.get("review_id")
+                review_artifact = review_by_id.get(review_id)
+                if not review_artifact:
+                    errors.append(f"review draft is missing: {review_id}")
+                    continue
+                source, source_error = _safe_relative(
+                    review_artifact.get("source"),
+                    f"review_artifacts[{review_id}].source",
+                )
+                if source_error:
+                    errors.append(source_error)
+                    continue
+                source_path = bundle / Path(str(source))
+                if not source_path.is_file():
+                    errors.append(f"review draft source does not exist: {source}")
+                    continue
+                actual_covers = set(
+                    review_artifact.get("covers_knowledge_ids", [])
+                )
+                expected_covers = set(
+                    review_document.get("covers_knowledge_ids", [])
+                )
+                if actual_covers != expected_covers:
+                    errors.append(
+                        f"review draft knowledge coverage mismatch: {review_id}"
+                    )
+                text = source_path.read_text(encoding="utf-8")
+                for section in review_document.get("required_sections", []):
+                    if not re.search(
+                        rf"(?m)^#+\s+{re.escape(str(section))}\s*$", text,
+                    ):
+                        errors.append(
+                            f"{source}: review draft required section missing: "
+                            f"{section}"
+                        )
         approval_bundle = bundle / "approval-bundle.md"
         if not approval_bundle.is_file():
             errors.append("approval-bundle.md is required")
@@ -586,6 +688,12 @@ def validate_synthesis_bundle(
                 if change_id and change_id not in approval_text:
                     errors.append(
                         f"approval-bundle.md missing change_id: {change_id}"
+                    )
+            for review_artifact in manifest.get("review_artifacts", []):
+                review_id = str(review_artifact.get("review_id", ""))
+                if review_id and review_id not in approval_text:
+                    errors.append(
+                        f"approval-bundle.md missing review_id: {review_id}"
                     )
     return manifest, errors
 

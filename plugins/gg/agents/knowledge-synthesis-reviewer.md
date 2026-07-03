@@ -23,10 +23,13 @@ Check:
    section is covered or has a correctly classified Gap/Observation Request.
 7. Impact entries are not incorrectly concentrated in one document and golden
    tasks meet Domain Top-1 and Knowledge Top-3 thresholds.
-8. Owner authority, scope, verification status, and gaps are consistent across
+8. Every review draft covers its declared Knowledge IDs, introduces no new
+   facts, and presents the same authority, scope, verification status, and
+   gaps. Semantic feedback has been applied to Agent Knowledge first.
+9. Owner authority, scope, verification status, and gaps are consistent across
    documents.
-9. Business prose contains no Bundle, Stage, Approval, or publication process
+10. Business prose contains no Bundle, Stage, Approval, or publication process
    state and no raw Claim/Verdict dumps.
-10. No domain structure appears outside the supplied Profile, Blueprint, or templates.
+11. No domain structure appears outside the supplied Profile, Blueprint, or templates.
 
 Return `pass`, `revise`, or `blocked`, with exact artifact locations. Never edit canonical knowledge.

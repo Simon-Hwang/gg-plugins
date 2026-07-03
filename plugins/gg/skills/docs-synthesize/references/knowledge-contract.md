@@ -19,16 +19,19 @@ marker. A `gap` describes an unknown only; split mixed supported/unknown
 paragraphs. Process state such as Bundle, Stage, Approval, or publication
 eligibility is report metadata and must not enter business drafts.
 
-Blueprint-required sections and knowledge primitives are hard gates. Elect one
-primary document for duplicated concepts and reference it elsewhere so Owner
-authority, verification status, scope, and gap language cannot contradict
-across drafts.
+Blueprint-required Agent Knowledge sections and knowledge primitives are hard
+gates. Review draft structure is validated only for declared required
+headings; diagrams, tables, and walkthroughs are recommended presentation
+choices, not quota gates. Elect one primary document for duplicated concepts
+and reference it elsewhere so Owner authority, verification status, scope, and
+gap language cannot contradict across views.
 
-Required Synthesis Bundle:
+Required dual-view Synthesis Bundle:
 
 ```text
 synthesis-manifest.yaml|json
-drafts/
+review-drafts/       # human approval views; never published
+agent-knowledge/     # compact canonical knowledge; publish source
 statements/
 context-pack/
 mappings/
@@ -36,6 +39,11 @@ coverage/
 reports/
 approval-bundle.md
 ```
+
+`artifacts[]` points only to `agent-knowledge/**`. `review_artifacts[]` maps
+each human review view to one or more published Knowledge IDs. Review drafts
+are included in the Bundle hash and approval scope but never become Publication
+targets.
 
 When a fact needed by a required slot is absent, emit an Observation Request rather than reading code and judging it inside synthesis.
 

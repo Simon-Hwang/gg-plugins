@@ -33,6 +33,34 @@
         }
       }
     },
+    "review_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "review_id",
+          "template",
+          "target_hint",
+          "covers_knowledge_ids",
+          "required_sections"
+        ],
+        "properties": {
+          "review_id": {"type": "string", "minLength": 1},
+          "template": {"type": "string", "minLength": 1},
+          "target_hint": {"type": "string", "minLength": 1},
+          "covers_knowledge_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "required_sections": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        }
+      }
+    },
     "context_pack": {"type": "object"},
     "policies": {"type": "object"}
   },

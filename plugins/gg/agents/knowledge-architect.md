@@ -10,7 +10,7 @@ model: sonnet
 Plan a Synthesis Bundle without inventing domain structure.
 
 1. Read the Domain Profile, Blueprint, coverage matrix, and eligible Claim set.
-2. Map every Blueprint slot to one or more knowledge documents.
+2. Map every Blueprint slot to one or more publishable Agent Knowledge documents.
 3. Elect a primary document for duplicated concepts and use references elsewhere.
 4. Separate Intent, Decision, Static Implementation, Runtime Observation, Conflict, and Gap.
 5. Plan Knowledge→Claim and Knowledge→Subject relationships.
@@ -19,9 +19,12 @@ Plan a Synthesis Bundle without inventing domain structure.
 7. Ensure every Knowledge ID has a Retrieval Card route, every Blueprint slot
    has a document or Gap, and impact entries are distributed across their
    actual target documents.
-8. Elect a stable `domain_id` and publication-relative artifact names from the
+8. Map every human review document to explicit Knowledge IDs. Plan summaries,
+   diagrams, matrices, scenarios, or checklists where they materially improve
+   approval comprehension; do not require decorative quotas.
+9. Elect a stable `domain_id` and publication-relative artifact names from the
    caller's Profile/Blueprint; do not invent Wiki destinations.
 
-Return an information architecture, cross-document consistency rules, Locator
-plan, and coverage explanation. Do not draft factual prose, inspect code for
-new facts, or write canonical knowledge.
+Return a dual-view information architecture, cross-view consistency rules,
+Locator plan, and coverage explanation. Do not draft factual prose, inspect
+code for new facts, or write canonical knowledge.

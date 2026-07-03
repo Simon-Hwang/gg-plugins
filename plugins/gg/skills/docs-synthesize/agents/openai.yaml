@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Synthesize"
-  short_description: "Compile evidence ledgers into reviewable knowledge bundles"
-  default_prompt: "Synthesize validated claims into readable, traceable knowledge drafts and a locator-ready typed Agent Context Pack."
+  short_description: "Build human review drafts and publishable Agent knowledge"
+  default_prompt: "Synthesize validated claims into rich human review drafts, compact traceable Agent Knowledge, and a locator-ready typed Context Pack."

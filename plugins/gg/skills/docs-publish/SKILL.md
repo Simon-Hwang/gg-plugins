@@ -25,6 +25,7 @@ Require:
 2. Validate the domain ID and plan one immutable Knowledge Publication,
    Context Pack, Domain Manifest update, Global Registry update, and optional
    single thin Wiki Gateway as one transaction.
+   Ignore `review_artifacts[]`; they are approval views and never targets.
 3. Ask `knowledge-publish-planner` to explain the deterministic file plan.
 4. Read the immutable `publication_id` from the Blueprint-bound Bundle, then run
    `publications plan --publication-id <id>`; show supported changes and fail closed for any
@@ -66,6 +67,8 @@ Use `publications apply` only after plan review. Use `publications rollback --pu
 ## Hard rules
 
 - Do not generate, rewrite, or reinterpret business narrative.
+- Publish only `artifacts[]` sourced from `agent-knowledge/**`. Never copy
+  `review-drafts/**` into Knowledge, Context, or Wiki.
 - Do not publish without a matching Bundle hash and complete Policy-required roles.
 - Do not write outside `allowed_roots`.
 - The default canonical target is `knowledge/**`, never four scattered

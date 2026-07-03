@@ -15,6 +15,8 @@ For a new publication require `--profile`, `--blueprint`, `--policy`, `--bundle`
 hash-bound Semantic Review Record, and explicit `--apply` before writing targets.
 
 Use `knowledge-publish-planner` to explain the deterministic plan and `semantic-diff-reviewer` to review staged semantic changes. Never generate narrative during publication.
+Review drafts remain inside the approved Bundle; reject any plan that routes
+them into `knowledge/**` or `wiki/**`.
 
 Canonical output defaults to one immutable
 `knowledge/domains/<domain-id>/publications/<publication-id>` tree plus its
