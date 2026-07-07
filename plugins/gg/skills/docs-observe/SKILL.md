@@ -18,6 +18,8 @@ Read [references/workflow.md](references/workflow.md) before execution. Use the 
 5. Ask the `evidence-claim-analyst` playbook to assess claim quality.
 6. Locate source candidates, then verify repository, commit, path, symbol, contract, or test directly.
 7. Produce a scoped Verdict. Use `requires-runtime-evidence` for online-only questions.
+   Emit provider-routable Observation Requests for runtime-only Claims under
+   `evidence/observation-requests/requests.jsonl`.
 8. Ask the `evidence-verdict-reviewer` playbook to independently review critical/high-risk results.
 9. Write sidecars, Findings, repository scope, run manifest, and an approval bundle.
 10. Rebuild and validate the SQLite index. Report numerator, denominator, and uncovered items.
@@ -34,6 +36,11 @@ Read [references/workflow.md](references/workflow.md) before execution. Use the 
 
 Observation Requests may name a target `domain_id`, Blueprint `slot_id`, or
 existing Knowledge Coordinate so later synthesis/maintenance can route the gap.
+For runtime requests, include `capability`, opaque `query`, `provider_hints`,
+`required_scope`, `expected_evidence_type`, and `freshness.max_age`. Use
+project-provided discovery hints when classifying business runtime dependencies;
+do not hard-code Apollo, metrics, logs, or other provider semantics into this
+workflow.
 Findings may reference a Knowledge Coordinate to identify an affected published
 view, but Observe still judges the underlying Claim rather than editing that
 view.

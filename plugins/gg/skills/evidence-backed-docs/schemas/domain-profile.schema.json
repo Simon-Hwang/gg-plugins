@@ -13,6 +13,61 @@
     "authority_rules": {"type": "object"},
     "repository_resolvers": {"type": "array"},
     "adapter_requirements": {"type": "object"},
+    "adapters": {
+      "type": "object",
+      "properties": {
+        "runtime_observation": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "providers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "type", "supports"],
+                "properties": {
+                  "id": {"type": "string"},
+                  "type": {"type": "string"},
+                  "subtype": {"type": "string"},
+                  "enabled": {"type": "boolean"},
+                  "mode": {"type": "string"},
+                  "skill": {"type": "string"},
+                  "command": {"type": "string"},
+                  "preflight": {
+                    "oneOf": [
+                      {"type": "string"},
+                      {
+                        "type": "object",
+                        "properties": {
+                          "command": {"type": "string"},
+                          "args": {"type": "array", "items": {"type": "string"}},
+                          "timeout": {"type": "integer", "minimum": 1, "maximum": 60},
+                          "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 60}
+                        },
+                        "additionalProperties": true
+                      }
+                    ]
+                  },
+                  "env": {"type": "object"},
+                  "supports": {"type": "array", "items": {"type": "string"}},
+                  "freshness": {
+                    "type": "object",
+                    "properties": {
+                      "max_age": {"type": "string", "pattern": "^[1-9][0-9]*(s|m|h|d|w)$"}
+                    },
+                    "additionalProperties": true
+                  },
+                  "secret_policy": {"type": "object"}
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "finding_sink": {"type": "string"}
   },
   "additionalProperties": true

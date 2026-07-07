@@ -3,6 +3,7 @@
 | Capability | Status |
 |---|---|
 | Profile and Claim validation | available |
+| Observation Request validation | available |
 | SQLite rebuild, validation, query | available |
 | RAG candidate retrieval | optional; never authoritative |
 | Static code evidence | available through `docs-observe` |

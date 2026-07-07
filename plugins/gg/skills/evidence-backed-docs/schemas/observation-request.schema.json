@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/observation-request.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "subject",
+    "claim_ids",
+    "provider_hints",
+    "capability",
+    "query",
+    "required_scope",
+    "expected_evidence_type",
+    "freshness"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string"},
+    "kind": {"const": "runtime-observation-request"},
+    "reason": {"type": "string"},
+    "subject": {"type": "string"},
+    "claim_ids": {"type": "array", "items": {"type": "string"}},
+    "provider_hints": {"type": "array", "items": {"type": "string"}},
+    "capability": {"type": "string"},
+    "query": {"type": "object"},
+    "static_evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "required_scope": {"type": "object"},
+    "expected_evidence_type": {"type": "string"},
+    "freshness": {
+      "type": "object",
+      "required": ["max_age"],
+      "properties": {
+        "max_age": {"type": "string", "pattern": "^[1-9][0-9]*(s|m|h|d|w)$"},
+        "required": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

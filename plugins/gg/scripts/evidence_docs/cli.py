@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -14,11 +15,13 @@ if __package__ in {None, ""}:
         ValidationFailure,
         canonical_fingerprint,
         git_commit,
+        iter_jsonl,
         load_yaml,
         query_index,
         rebuild_index,
         validate_claim,
         validate_index,
+        validate_observation_request,
         validate_profile,
     )
     from evidence_docs.knowledge import (  # type: ignore
@@ -48,11 +51,13 @@ else:
         ValidationFailure,
         canonical_fingerprint,
         git_commit,
+        iter_jsonl,
         load_yaml,
         query_index,
         rebuild_index,
         validate_claim,
         validate_index,
+        validate_observation_request,
         validate_profile,
     )
     from .knowledge import (
@@ -92,6 +97,228 @@ def claim_files(root: Path) -> list[Path]:
     return sorted([*folder.glob("*.yaml"), *folder.glob("*.yml")]) if folder.exists() else []
 
 
+def observation_request_file(root: Path) -> Path:
+    return root / "evidence" / "observation-requests" / "requests.jsonl"
+
+
+def _string_list(value) -> list[str]:
+    return [str(item) for item in value] if isinstance(value, list) else []
+
+
+def _append_reason(reasons: list[str], reason: str) -> None:
+    if reason not in reasons:
+        reasons.append(reason)
+
+
+def _resolve_command(command: str, root: Path, profile_path: Path) -> Path:
+    expanded = Path(os.path.expandvars(command)).expanduser()
+    if expanded.is_absolute():
+        return expanded
+    profile_relative = (profile_path.parent / expanded).resolve()
+    if profile_relative.exists():
+        return profile_relative
+    root_relative = (root / expanded).resolve()
+    if root_relative.exists():
+        return root_relative
+    return profile_relative
+
+
+def _preflight_command(provider: dict) -> tuple[str | None, list[str], int]:
+    preflight = provider.get("preflight")
+    if isinstance(preflight, str):
+        return preflight, [], 10
+    if isinstance(preflight, dict):
+        raw_args = preflight.get("args", [])
+        args = [str(item) for item in raw_args] if isinstance(raw_args, list) else []
+        timeout = preflight.get("timeout_seconds", preflight.get("timeout", 10))
+        try:
+            timeout_seconds = int(timeout)
+        except (TypeError, ValueError):
+            timeout_seconds = 10
+        timeout_seconds = max(1, min(timeout_seconds, 60))
+        command = preflight.get("command") or provider.get("command")
+        return str(command) if command else None, args, timeout_seconds
+    return None, [], 10
+
+
+def _run_provider_preflight(
+    provider: dict,
+    root: Path,
+    profile_path: Path,
+) -> tuple[dict | None, list[str]]:
+    command, args, timeout_seconds = _preflight_command(provider)
+    if not command:
+        return None, []
+    command_path = _resolve_command(command, root, profile_path)
+    if not command_path.exists():
+        return None, ["preflight-command-not-found"]
+    if not os.access(command_path, os.X_OK):
+        return None, ["preflight-command-not-executable"]
+    try:
+        completed = subprocess.run(
+            [str(command_path), *args],
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        return None, ["preflight-timeout"]
+    except OSError:
+        return None, ["preflight-exec-error"]
+    if completed.returncode != 0:
+        return {
+            "exit_code": completed.returncode,
+            "stderr": completed.stderr.strip()[:500],
+        }, ["preflight-failed"]
+    try:
+        value = json.loads(completed.stdout)
+    except json.JSONDecodeError:
+        return {"stdout": completed.stdout.strip()[:500]}, ["preflight-invalid-json"]
+    if not isinstance(value, dict):
+        return None, ["preflight-output-not-object"]
+    reasons: list[str] = []
+    if value.get("ok") is not True:
+        reasons.append("preflight-not-ok")
+    provider_id = value.get("provider_id")
+    if provider_id is not None and provider_id != provider.get("id"):
+        reasons.append("preflight-provider-id-mismatch")
+    capabilities = value.get("capabilities")
+    if capabilities is not None:
+        if not isinstance(capabilities, list) or any(
+            not isinstance(item, str) for item in capabilities
+        ):
+            reasons.append("preflight-capabilities-invalid")
+        else:
+            missing = sorted(set(_string_list(provider.get("supports"))) - set(capabilities))
+            if missing:
+                reasons.append("preflight-capabilities-missing")
+    return value, reasons
+
+
+def _provider_status(
+    provider: dict,
+    root: Path,
+    profile_path: Path,
+    group_enabled: bool,
+) -> dict:
+    enabled = group_enabled and bool(provider.get("enabled", True))
+    env = provider.get("env") if isinstance(provider.get("env"), dict) else {}
+    secret_policy = (
+        provider.get("secret_policy")
+        if isinstance(provider.get("secret_policy"), dict)
+        else {}
+    )
+    require_env = bool(secret_policy.get("require_env", bool(env)))
+    missing_env = [
+        str(name)
+        for name in env.values()
+        if isinstance(name, str) and name and not os.environ.get(name)
+    ] if require_env else []
+    command = provider.get("command")
+    command_path = None
+    command_exists = True
+    command_executable = True
+    if command:
+        command_path = _resolve_command(str(command), root, profile_path)
+        command_exists = command_path.exists()
+        command_executable = os.access(command_path, os.X_OK) if command_exists else False
+    reasons: list[str] = []
+    if not enabled:
+        reasons.append("disabled")
+    for field in ("id", "type"):
+        if enabled and not isinstance(provider.get(field), str):
+            _append_reason(reasons, f"missing-{field}")
+    supports = provider.get("supports")
+    if enabled and (
+        not isinstance(supports, list)
+        or not supports
+        or any(not isinstance(item, str) for item in supports)
+    ):
+        _append_reason(reasons, "invalid-supports")
+    freshness = provider.get("freshness")
+    if enabled and freshness is not None:
+        if not isinstance(freshness, dict):
+            _append_reason(reasons, "invalid-freshness")
+        else:
+            max_age = freshness.get("max_age")
+            if max_age is not None and (not isinstance(max_age, str) or not max_age):
+                _append_reason(reasons, "invalid-freshness")
+    if enabled and env and any(not isinstance(name, str) or not name for name in env.values()):
+        _append_reason(reasons, "invalid-env")
+    if enabled and not command:
+        _append_reason(reasons, "missing-command")
+    if enabled and command and not command_exists:
+        _append_reason(reasons, "command-not-found")
+    if enabled and command and command_exists and not command_executable:
+        _append_reason(reasons, "command-not-executable")
+    if enabled and missing_env:
+        _append_reason(reasons, "missing-env")
+    preflight = None
+    if enabled and not reasons:
+        preflight, preflight_reasons = _run_provider_preflight(
+            provider,
+            root,
+            profile_path,
+        )
+        for reason in preflight_reasons:
+            _append_reason(reasons, reason)
+    healthy = enabled and not reasons
+    status = {
+        "id": provider.get("id"),
+        "type": provider.get("type"),
+        "enabled": enabled,
+        "available": healthy,
+        "healthy": healthy,
+        "mode": provider.get("mode", "unconfigured"),
+        "supports": _string_list(provider.get("supports")),
+    }
+    if provider.get("subtype"):
+        status["subtype"] = provider.get("subtype")
+    if isinstance(provider.get("freshness"), dict):
+        status["freshness"] = provider.get("freshness")
+    if command_path:
+        status["command"] = str(command_path)
+    if preflight is not None:
+        status["preflight"] = preflight
+    if missing_env:
+        status["missing_env"] = missing_env
+    if reasons:
+        status["reason"] = ",".join(reasons)
+    return status
+
+
+def _runtime_observation_preflight(profile: dict, root: Path, profile_path: Path) -> dict | None:
+    adapters = profile.get("adapters")
+    if not isinstance(adapters, dict):
+        return None
+    provider_groups: list[tuple[str, dict]] = []
+    runtime_observation = adapters.get("runtime_observation")
+    if isinstance(runtime_observation, dict):
+        provider_groups.append(("runtime_observation", runtime_observation))
+    runtime_config = adapters.get("runtime_config")
+    if isinstance(runtime_config, dict) and isinstance(runtime_config.get("providers"), list):
+        provider_groups.append(("runtime_config", runtime_config))
+    providers: list[dict] = []
+    aliases: list[str] = []
+    for group_name, group in provider_groups:
+        if group_name != "runtime_observation":
+            aliases.append(group_name)
+        group_enabled = bool(group.get("enabled", True))
+        for provider in group.get("providers", []):
+            if isinstance(provider, dict):
+                providers.append(_provider_status(provider, root, profile_path, group_enabled))
+    if not providers and not provider_groups:
+        return None
+    result = {
+        "available": any(provider["healthy"] for provider in providers),
+        "providers": providers,
+    }
+    if aliases:
+        result["aliases"] = aliases
+    return result
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gg-evidence")
     parser.add_argument("--root", type=Path, default=Path.cwd())
@@ -107,6 +334,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     claims = groups.add_parser("claims").add_subparsers(dest="action", required=True)
     claims.add_parser("validate")
+
+    observation_requests = groups.add_parser("observation-requests").add_subparsers(
+        dest="action",
+        required=True,
+    )
+    observation_requests.add_parser("validate")
 
     index = groups.add_parser("index").add_subparsers(dest="action", required=True)
     index.add_parser("rebuild")
@@ -207,6 +440,33 @@ def main(argv=None) -> int:
                 if target and target not in known:
                     errors.append(f"claim {claim.get('id')}: superseded_by target {target!r} does not exist")
             return emit(not errors, command, {"files": len(claims), "claims": len(latest)}, errors)
+
+        if args.group == "observation-requests":
+            request_path = observation_request_file(root)
+            errors: list[str] = []
+            seen: set[str] = set()
+            count = 0
+            if not request_path.exists():
+                return emit(
+                    False,
+                    command,
+                    {"file": str(request_path), "requests": 0},
+                    [f"{request_path}: missing observation request ledger"],
+                )
+            for line_no, request in iter_jsonl(request_path):
+                count += 1
+                errors.extend(validate_observation_request(request, request_path, line_no))
+                request_id = request.get("id")
+                if isinstance(request_id, str):
+                    if request_id in seen:
+                        errors.append(f"{request_path}:{line_no}: duplicate id {request_id}")
+                    seen.add(request_id)
+            return emit(
+                not errors,
+                command,
+                {"file": str(request_path), "requests": count},
+                errors,
+            )
 
         if args.group == "blueprints":
             if not args.blueprint:
@@ -419,7 +679,11 @@ def main(argv=None) -> int:
             optional = {
                 name: {"available": bool(config.get("enabled")), "mode": config.get("mode", "unconfigured")}
                 for name, config in configured.items()
+                if name not in {"runtime_observation", "runtime_config"}
             }
+            runtime_observation = _runtime_observation_preflight(profile, root, args.profile.resolve())
+            if runtime_observation is not None:
+                optional["runtime_observation"] = runtime_observation
             return emit(all(required.values()), command, {"required": required, "optional": optional})
 
         if args.group == "fingerprint":

@@ -12,6 +12,8 @@ Read [references/workflow.md](references/workflow.md) before running. Use the sh
 ## Mandatory preflight
 
 Run `scripts/gg-evidence --root <wiki-root> --profile <profile> adapters preflight`.
+Run `scripts/gg-evidence --root <wiki-root> observation-requests validate` when
+runtime Observation Requests exist.
 
 Stop and recommend `docs-observe` if Claim store, Evidence store, repository access, or index is unavailable. Record every optional adapter as available, unavailable, or degraded.
 
@@ -35,6 +37,8 @@ Evidence index.
 1. Map changes from files/config/experiments/deployments to subjects, Evidence,
    Claims, Knowledge Coordinates, Publications/domains, documents, and Findings.
 2. Reuse Evidence only while its source version and freshness policy remain valid.
+   Runtime Evidence must satisfy the stricter of provider freshness and the
+   Observation Request's `freshness.max_age`.
 3. Append Evidence and Verdict history; never update history in place.
 4. Revalidate fixed Findings before closing them.
 5. Escalate overdue Findings by appending events to the original Finding.
@@ -45,3 +49,13 @@ Evidence index.
    Synthesis Bundle and Publication.
 9. Update a Domain Manifest or Registry only through `docs-publish`; Maintain
    records affected coordinates and revalidation results in the Evidence layer.
+
+## Runtime provider boundary
+
+Resolve runtime Observation Requests through
+`adapters.runtime_observation.providers[]` by `provider_hints` and
+`capability`. Execute only enabled, healthy project-defined provider commands.
+Treat request `query` and provider `runtime` payloads as business-owned
+structures; GG core records provenance, scope, observation time, source version,
+content hash, confidence, freshness, and raw payload references without
+interpreting provider-specific semantics.

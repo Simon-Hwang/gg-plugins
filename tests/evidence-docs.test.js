@@ -342,6 +342,233 @@ test("profile validator accepts a bounded minimal profile", () => {
   assert.equal(JSON.parse(result.stdout).ok, true);
 });
 
+test("observation request validator accepts runtime requests with freshness", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-requests-"));
+  fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/observation-requests/requests.jsonl"),
+    `${JSON.stringify({
+      schema_version: "1",
+      id: "OR-runtime-001",
+      kind: "runtime-observation-request",
+      subject: "runtime://config/example",
+      claim_ids: ["claim-a"],
+      provider_hints: ["example-provider"],
+      capability: "example.config.read",
+      query: { key: "example" },
+      static_evidence_ids: ["evidence-static-a"],
+      required_scope: { environment: "online" },
+      expected_evidence_type: "runtime_config",
+      freshness: { max_age: "6h", required: true },
+    })}\n`);
+  const result = run(["--root", dir, "observation-requests", "validate"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const output = JSON.parse(result.stdout);
+  assert.equal(output.data.requests, 1);
+});
+
+test("observation request validator rejects missing freshness", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-requests-"));
+  fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/observation-requests/requests.jsonl"),
+    `${JSON.stringify({
+      schema_version: "1",
+      id: "OR-runtime-001",
+      kind: "runtime-observation-request",
+      subject: "runtime://config/example",
+      claim_ids: [],
+      provider_hints: [],
+      capability: "example.config.read",
+      query: {},
+      required_scope: {},
+      expected_evidence_type: "runtime_config",
+    })}\n`);
+  const result = run(["--root", dir, "observation-requests", "validate"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /freshness/);
+});
+
+test("adapter preflight reports runtime observation providers generically", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-adapters-"));
+  const repoDir = path.join(dir, "repo");
+  fs.mkdirSync(path.join(dir, "evidence/claims"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/records"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/index"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/index/evidence.db"), "");
+  fs.mkdirSync(repoDir, { recursive: true });
+  execFileSync("git", ["init"], { cwd: repoDir, stdio: "ignore" });
+  fs.writeFileSync(path.join(repoDir, "README.md"), "fixture\n");
+  execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "ignore" });
+  execFileSync("git", [
+    "-c", "user.email=test@example.com",
+    "-c", "user.name=Test",
+    "commit", "-m", "fixture",
+  ], { cwd: repoDir, stdio: "ignore" });
+  const command = path.join(dir, "provider.sh");
+  fs.writeFileSync(command, "#!/bin/sh\nexit 0\n");
+  fs.chmodSync(command, 0o755);
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    `repository_roots: [${repoDir}]`,
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    enabled: true",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    "        subtype: example",
+    "        mode: skill-script",
+    `        command: ${command}`,
+    "        env: {token: EXAMPLE_PROVIDER_TOKEN}",
+    "        supports: [example.config.read]",
+    "        freshness: {max_age: 6h}",
+    "        secret_policy: {require_env: true}",
+    "      - id: disabled-provider",
+    "        type: metrics",
+    "        enabled: false",
+    "        supports: [metric.query]",
+    "",
+  ].join("\n"));
+  const result = run(
+    ["--root", dir, "--profile", profile, "adapters", "preflight"],
+    { env: { EXAMPLE_PROVIDER_TOKEN: "secret" } },
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const runtime = JSON.parse(result.stdout).data.optional.runtime_observation;
+  assert.equal(runtime.available, true);
+  assert.equal(runtime.providers[0].healthy, true);
+  assert.deepEqual(runtime.providers[0].supports, ["example.config.read"]);
+  assert.equal(runtime.providers[1].healthy, false);
+  assert.match(runtime.providers[1].reason, /disabled/);
+});
+
+test("adapter preflight degrades enabled provider with missing env", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-adapters-"));
+  const profile = path.join(dir, "profile.yaml");
+  const command = path.join(dir, "provider.sh");
+  fs.writeFileSync(command, "#!/bin/sh\nexit 0\n");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    "repository_roots: [repos]",
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    `        command: ${command}`,
+    "        env: {token: EXAMPLE_PROVIDER_TOKEN}",
+    "        supports: [example.config.read]",
+    "        secret_policy: {require_env: true}",
+    "",
+  ].join("\n"));
+  const result = run(["--root", dir, "--profile", profile, "adapters", "preflight"]);
+  assert.equal(result.status, 2);
+  const provider = JSON.parse(result.stdout).data.optional.runtime_observation.providers[0];
+  assert.equal(provider.healthy, false);
+  assert.match(provider.reason, /missing-env/);
+});
+
+test("adapter preflight executes generic provider health command", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-adapters-"));
+  const repoDir = path.join(dir, "repo");
+  fs.mkdirSync(path.join(dir, "evidence/claims"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/records"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/index"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/index/evidence.db"), "");
+  fs.mkdirSync(repoDir, { recursive: true });
+  execFileSync("git", ["init"], { cwd: repoDir, stdio: "ignore" });
+  fs.writeFileSync(path.join(repoDir, "README.md"), "fixture\n");
+  execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "ignore" });
+  execFileSync("git", [
+    "-c", "user.email=test@example.com",
+    "-c", "user.name=Test",
+    "commit", "-m", "fixture",
+  ], { cwd: repoDir, stdio: "ignore" });
+  const command = path.join(dir, "provider-preflight.sh");
+  fs.writeFileSync(command, [
+    "#!/bin/sh",
+    "printf '%s\\n' '{\"ok\":true,\"provider_id\":\"example-provider\",\"capabilities\":[\"example.config.read\"]}'",
+    "",
+  ].join("\n"));
+  fs.chmodSync(command, 0o755);
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    `repository_roots: [${repoDir}]`,
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    "        mode: skill-script",
+    `        command: ${command}`,
+    "        preflight: {command: " + command + "}",
+    "        supports: [example.config.read]",
+    "",
+  ].join("\n"));
+  const result = run(["--root", dir, "--profile", profile, "adapters", "preflight"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const provider = JSON.parse(result.stdout).data.optional.runtime_observation.providers[0];
+  assert.equal(provider.healthy, true);
+  assert.equal(provider.preflight.ok, true);
+});
+
+test("adapter preflight degrades provider when generic health omits capabilities", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-adapters-"));
+  const repoDir = path.join(dir, "repo");
+  fs.mkdirSync(path.join(dir, "evidence/claims"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/records"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/index"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/index/evidence.db"), "");
+  fs.mkdirSync(repoDir, { recursive: true });
+  execFileSync("git", ["init"], { cwd: repoDir, stdio: "ignore" });
+  fs.writeFileSync(path.join(repoDir, "README.md"), "fixture\n");
+  execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "ignore" });
+  execFileSync("git", [
+    "-c", "user.email=test@example.com",
+    "-c", "user.name=Test",
+    "commit", "-m", "fixture",
+  ], { cwd: repoDir, stdio: "ignore" });
+  const command = path.join(dir, "provider-preflight.sh");
+  fs.writeFileSync(command, [
+    "#!/bin/sh",
+    "printf '%s\\n' '{\"ok\":true,\"provider_id\":\"example-provider\",\"capabilities\":[]}'",
+    "",
+  ].join("\n"));
+  fs.chmodSync(command, 0o755);
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    `repository_roots: [${repoDir}]`,
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    `        command: ${command}`,
+    "        preflight: {command: " + command + "}",
+    "        supports: [example.config.read]",
+    "",
+  ].join("\n"));
+  const result = run(["--root", dir, "--profile", profile, "adapters", "preflight"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const provider = JSON.parse(result.stdout).data.optional.runtime_observation.providers[0];
+  assert.equal(provider.healthy, false);
+  assert.match(provider.reason, /preflight-capabilities-missing/);
+});
+
 test("claim validation rejects invalid supersession", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-claims-"));
   fs.mkdirSync(path.join(dir, "evidence/claims"), { recursive: true });

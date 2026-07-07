@@ -56,6 +56,7 @@ Resolve the plugin root, then run:
 ```bash
 scripts/gg-evidence --profile <profile.yaml> profile validate
 scripts/gg-evidence --root <wiki-root> claims validate
+scripts/gg-evidence --root <wiki-root> observation-requests validate
 scripts/gg-evidence --root <wiki-root> index rebuild
 scripts/gg-evidence --root <wiki-root> index validate
 scripts/gg-evidence --root <wiki-root> index query <text>
@@ -76,6 +77,23 @@ Do not reproduce these checks in prompts. Use CLI JSON output and preserve its e
 
 ## Evidence acceptance
 
-Accept static support or contradiction only when the Evidence contains a resolvable repository, commit, path, and—when asserted—symbol. Accept runtime support or contradiction only when the adapter records environment, scope, observation time, and source version.
+Accept static support or contradiction only when the Evidence contains a resolvable repository, commit, path, and—when asserted—symbol. Accept runtime support or contradiction only when the adapter records environment, scope, observation time, source version, and freshness policy.
 
 Use `requires-runtime-evidence` when static sources cannot prove a time-sensitive statement.
+
+## Runtime observation providers
+
+GG core treats `adapters.runtime_observation.providers[]` as a generic
+observation surface. It routes by `capability`, `provider_hints`,
+`expected_evidence_type`, and `required_scope`; project profiles own concrete
+providers, commands, query shapes, payload summaries, and business semantics.
+Provider preflight is optional and generic. When a provider declares
+`preflight`, the command must return one JSON object with `ok: true`, optional
+`provider_id`, and optional `capabilities[]`; GG core validates health and
+capability coverage but does not interpret provider-specific payloads.
+
+Observation Requests are stored at
+`evidence/observation-requests/requests.jsonl`. Each request must include a
+`freshness.max_age` duration such as `6h` or `1d`. Provider freshness is the
+default; request freshness may tighten it but must not be used to loosen a
+provider's policy.

@@ -12,6 +12,7 @@ knowledge/
         └── context/
 evidence/
 ├── claims/*.yaml
+├── observation-requests/requests.jsonl
 ├── records/evidence.jsonl
 ├── verdicts/verdicts.jsonl
 ├── findings/findings.jsonl

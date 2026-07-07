@@ -66,6 +66,10 @@ scripts/gg-evidence --root <root> index validate
 - Coverage accepts structured EligibleClaim records only; a Claim must be current,
   active, scope-compatible, fact-type-compatible, and reproducible. Partial or
   runtime-required Claims produce constrained coverage, never full coverage.
+- Runtime-supported Claims are renderable only when their runtime Evidence is
+  fresh under the stricter of provider freshness and the originating
+  Observation Request's `freshness.max_age`. Stale runtime Evidence becomes a
+  gap or constrained statement, never an unconditional runtime fact.
 - Keep Intent, Decision, Static Implementation, Runtime Observation, Conflict, and Gap distinct.
 - Never turn `partial`, `unknown`, `requires-runtime-evidence`, or `disputed` into an unconditional statement.
 - Treat generated diagrams as views; evidence-backed JSONL topology is authoritative.

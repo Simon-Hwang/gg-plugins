@@ -67,3 +67,8 @@ Publication and Rollback metadata
 
 Apply requires a `ready-to-apply` Stage Manifest bound to Bundle, Policy,
 Approval, current targets, staged tree, and a passing Semantic Review Record.
+
+Runtime facts in the Bundle must be backed by runtime Evidence that is fresh
+under the stricter of provider freshness and the originating Observation
+Request's `freshness.max_age`. Publish does not query providers; missing or
+stale runtime Evidence fails closed.

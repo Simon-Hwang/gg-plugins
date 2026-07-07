@@ -36,6 +36,7 @@ VERDICTS = {
     "requires-runtime-evidence",
     "disputed",
 }
+DURATION_PATTERN = re.compile(r"[1-9][0-9]*(s|m|h|d|w)")
 
 
 class ValidationFailure(ValueError):
@@ -208,6 +209,80 @@ def validate_claim(claim: dict[str, Any], path: Path | None = None) -> list[str]
                 errors.append(f"{prefix}source.{field} is required")
     elif "source" in claim:
         errors.append(f"{prefix}source must be an object")
+    return errors
+
+
+def _require_string_list(
+    value: dict[str, Any],
+    field: str,
+    errors: list[str],
+    prefix: str,
+    *,
+    allow_empty: bool = False,
+) -> None:
+    if field not in value:
+        errors.append(f"{prefix}missing required field {field}")
+        return
+    items = value.get(field)
+    if not isinstance(items, list) or any(not isinstance(item, str) for item in items):
+        errors.append(f"{prefix}{field} must be a list of strings")
+    elif not allow_empty and not items:
+        errors.append(f"{prefix}{field} must not be empty")
+
+
+def validate_observation_request(
+    request: dict[str, Any],
+    path: Path | None = None,
+    line_no: int | None = None,
+) -> list[str]:
+    location = f"{path}:{line_no}" if path and line_no else str(path) if path else ""
+    prefix = f"{location}: " if location else ""
+    errors: list[str] = []
+    required = (
+        "schema_version",
+        "id",
+        "kind",
+        "subject",
+        "claim_ids",
+        "provider_hints",
+        "capability",
+        "query",
+        "required_scope",
+        "expected_evidence_type",
+        "freshness",
+    )
+    for field in required:
+        if field not in request:
+            errors.append(f"{prefix}missing required field {field}")
+    if request.get("schema_version") != "1":
+        errors.append(f"{prefix}schema_version must be \"1\"")
+    if request.get("kind") != "runtime-observation-request":
+        errors.append(f"{prefix}kind must be runtime-observation-request")
+    for field in ("id", "subject", "capability", "expected_evidence_type"):
+        if field in request and not isinstance(request[field], str):
+            errors.append(f"{prefix}{field} must be a string")
+    _require_string_list(request, "claim_ids", errors, prefix, allow_empty=True)
+    _require_string_list(request, "provider_hints", errors, prefix, allow_empty=True)
+    if "static_evidence_ids" in request:
+        _require_string_list(
+            request,
+            "static_evidence_ids",
+            errors,
+            prefix,
+            allow_empty=True,
+        )
+    for field in ("query", "required_scope"):
+        if field in request and not isinstance(request[field], dict):
+            errors.append(f"{prefix}{field} must be an object")
+    freshness = request.get("freshness")
+    if "freshness" in request and not isinstance(freshness, dict):
+        errors.append(f"{prefix}freshness must be an object")
+    elif isinstance(freshness, dict):
+        max_age = freshness.get("max_age")
+        if not isinstance(max_age, str) or not DURATION_PATTERN.fullmatch(max_age):
+            errors.append(f"{prefix}freshness.max_age must be a duration like 6h or 1d")
+        if "required" in freshness and not isinstance(freshness["required"], bool):
+            errors.append(f"{prefix}freshness.required must be a boolean")
     return errors
 
 

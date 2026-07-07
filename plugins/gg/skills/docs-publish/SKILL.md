@@ -33,6 +33,9 @@ Require:
 5. Stop for unapproved change IDs, missing approval roles, stale evidence,
    target escape, base-hash conflicts, dangling Coordinates, invalid
    Registry/Manifest state, or more than one Wiki Gateway target.
+   Runtime statements must reference fresh runtime Evidence produced from a
+   validated Observation Request; stale or missing runtime Evidence fails
+   closed and routes the operator back to `docs-maintain`.
 6. Run `publications stage --stage-id <id> --publication-id <id>` and validate the complete target
    tree, including Registry and Manifest changes.
 7. Ask `semantic-diff-reviewer` to confirm no unapproved semantic change exists,
