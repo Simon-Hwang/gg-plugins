@@ -27,3 +27,6 @@ or raw Claim/Verdict structures in business prose.
 
 Approval is read through review drafts but remains bound to publishable change
 IDs. Never publish review drafts.
+
+Preserve every deterministic gate's complete CLI `validation_report` in Bundle
+reports; a copied or model-authored PASS is not evidence of validation.

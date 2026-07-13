@@ -19,3 +19,5 @@ Run adapter preflight before reading runtime facts. Stop when the static foundat
 For a compiled domain, start from its validated Domain Manifest and map changed
 Claims to Knowledge Coordinates. Never edit an immutable Publication; emit a
 resynthesis request and let `docs-publish` advance the current pointer.
+Run `lifecycle audit` before trusting a published current pointer, and preserve
+every gate's complete CLI `validation_report` in the Maintain report.

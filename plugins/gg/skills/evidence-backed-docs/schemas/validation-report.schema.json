@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/validation-report.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "validator",
+    "invocation",
+    "inputs",
+    "executed_at",
+    "result",
+    "result_hash"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "validator": {
+      "type": "object",
+      "required": [
+        "name",
+        "report_contract_version",
+        "implementation_hash",
+        "source_commit"
+      ],
+      "properties": {
+        "name": {"const": "gg-evidence"},
+        "report_contract_version": {"const": "1"},
+        "implementation_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "source_commit": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["command", "argv"],
+      "properties": {
+        "command": {"type": "string", "minLength": 1},
+        "argv": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "path", "sha256"],
+        "properties": {
+          "role": {
+            "enum": [
+              "profile",
+              "blueprint",
+              "policy",
+              "approval",
+              "bundle",
+              "observe_approval_bundle"
+            ]
+          },
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {
+            "oneOf": [
+              {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+              {"const": "unavailable"}
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "executed_at": {"type": "string", "format": "date-time"},
+    "result": {
+      "type": "object",
+      "required": ["ok", "error_count"],
+      "properties": {
+        "ok": {"type": "boolean"},
+        "error_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "result_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

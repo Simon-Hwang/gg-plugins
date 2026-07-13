@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Approve"
   short_description: "Review and apply approved documentation patches"
-  default_prompt: "Use $docs-approve to review an evidence-backed docs-observe Approval Bundle and apply only explicitly authorized patches."
+  default_prompt: "Use $docs-approve to Schema-validate an evidence-backed docs-observe Wiki Approval Bundle, preserve validation_report metadata, reject unknown or cross-capability item types, and apply only explicitly authorized patches."

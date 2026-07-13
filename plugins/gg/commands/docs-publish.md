@@ -39,3 +39,6 @@ Support:
 Stop for approval mismatch, stale input, target escape, unapproved semantic changes, base-hash conflict, or incomplete Context Pack.
 Also stop for Registry/Manifest inconsistency, dangling Coordinates, mutable
 Publication targets, invalid typed topology, or an unreachable Knowledge ID.
+After Apply or rollback, require `lifecycle audit` to bind Approval, Stage,
+Publication, Domain Manifest, and Registry state. Preserve each CLI
+`validation_report`; do not replace it with a prose PASS.

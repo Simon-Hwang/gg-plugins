@@ -14,6 +14,17 @@ Require the Approval Bundle path. Resolve its Wiki root, affected documents,
 Claims, Evidence, Verdicts, Findings, pinned source versions, and proposed
 patches.
 
+Before review, run:
+
+```bash
+scripts/gg-evidence --observe-approval-bundle <bundle.json> \
+  observe-approval-bundles validate
+```
+
+Reject unknown item types, cross-capability changes, Knowledge targets, and
+targets outside `wiki/**`. Preserve the CLI `validation_report` in the review
+record.
+
 Default to review-only. Apply nothing unless the user supplies explicit approval
 for named bundle items or a durable approval record that identifies the
 approver, role, items, and approved versions.
@@ -35,7 +46,8 @@ approver, role, items, and approved versions.
 9. Transition Findings to `resolved` only after successful validation. Otherwise
    use `pending-validation` or `disputed`, preserving the event history.
 10. Run deterministic Claim and index validation and report every changed file,
-    approval identity, unresolved item, and validation result.
+    approval identity, unresolved item, and validation result. Run
+    `scripts/gg-evidence --root <wiki-root> storage validate` before closeout.
 
 ## Hard rules
 
@@ -48,6 +60,13 @@ approver, role, items, and approved versions.
 - Never update `knowledge/**`, a Domain Manifest, or the Global Registry.
   `docs-approve` applies only `docs-observe` candidate patches to the
   human-maintained Wiki.
+- Never create timestamped evidence, approval, or audit directories while
+  applying a bundle. Keep stable bundle/task paths and record approval time,
+  validation time, and freshness inside artifacts.
+- Never reinterpret an unknown bundle item. Only `reference-fix`,
+  `business-intent-change`, `implementation-assertion-change`, and
+  `mixed-semantic-change` are executable; other work remains a Finding routed
+  to its owning capability.
 
 ## Codex invocation
 

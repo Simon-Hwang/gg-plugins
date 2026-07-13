@@ -22,6 +22,13 @@ test('Claude plugin manifest opts out of bundled MCP auto-loading', () => {
   );
 });
 
+test('Codex plugin manifest version tracks the Claude plugin version', () => {
+  const claudePlugin = readJson('plugins/gg/plugin.json');
+  const codexPlugin = readJson('plugins/gg/.codex-plugin/plugin.json');
+
+  assert.strictEqual(codexPlugin.version, claudePlugin.version);
+});
+
 test('MCP template includes Context7 for documentation lookup', () => {
   const mcpConfig = readJson('plugins/gg/mcp-configs/mcp-servers.json');
 

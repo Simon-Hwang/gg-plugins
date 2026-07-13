@@ -11,6 +11,14 @@
 
 A full run checks adapter health, Evidence freshness, high-risk Claims, store integrity, RAG/docs drift, Finding revalidation, overdue states, and accepted-risk review dates.
 
+Maintain writes to stable Evidence paths. Do not create run directories with
+wall-clock suffixes; put `run_started_at`, `run_finished_at`,
+`freshness_checked_at`, and supersession metadata in run manifests and records.
+Run `storage validate` before closeout.
+For published domains, run `lifecycle audit` before trusting the current
+Manifest/Registry pointer. Store the complete CLI `validation_report` objects;
+do not transcribe PASS states by hand.
+
 For compiled knowledge, propagate changes through:
 
 ```text

@@ -54,6 +54,12 @@ Plan and Stage must also receive the caller-provided Knowledge Blueprint so
 required documents and section headings are validated independently of Bundle
 self-reporting.
 
+`publication_id`, Stage ID, and target directories are stable semantic
+identities. Do not include wall-clock timestamps in
+`evidence/stages/**`, `evidence/publications/**`, or
+`knowledge/domains/**/publications/**`. Store timing in `created_at`,
+`staged_at`, `published_at`, approval, source-version, and freshness metadata.
+
 The Stage contains and validates:
 
 ```text
@@ -67,6 +73,15 @@ Publication and Rollback metadata
 
 Apply requires a `ready-to-apply` Stage Manifest bound to Bundle, Policy,
 Approval, current targets, staged tree, and a passing Semantic Review Record.
+Successful Apply transitions that Stage to `applied`; a failed Apply transitions
+it to `apply-failed` and retains the failed Publication Record. `lifecycle
+audit` must confirm that Approval, Stage, Publication, Domain Manifest, and
+Registry identities, hashes, and states agree after Apply or rollback.
+
+Every deterministic command result includes a `validation_report` conforming
+to `validation-report.schema.json`. Publication reports must preserve it
+verbatim so a PASS remains bound to the validator implementation, source
+commit, invocation, explicit inputs, execution time, and result hash.
 
 Runtime facts in the Bundle must be backed by runtime Evidence that is fresh
 under the stricter of provider freshness and the originating Observation

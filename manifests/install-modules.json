@@ -228,7 +228,7 @@
     {
       "id": "skills-evidence-docs",
       "kind": "skills",
-      "description": "Evidence-backed documentation protocols and Codex-native workflows: auditable Claim/Evidence/Verdict/Finding stores, static observation, approval-gated candidate patch application, Blueprint-driven synthesis, transactional publication, runtime-aware maintenance, and deterministic indexing.",
+      "description": "Evidence-backed documentation protocols and Codex-native workflows: auditable Claim/Evidence/Verdict/Finding stores, static and runtime-aware observation, approval-gated candidate patch application, Blueprint-driven synthesis, transactional publication, runtime-aware maintenance, and deterministic indexing.",
       "paths": [
         "plugins/gg/skills/evidence-backed-docs",
         "plugins/gg/skills/docs-observe",

@@ -12,4 +12,6 @@ rebuild --root <wiki-root>
 query --root <wiki-root> <text>
 ```
 
-Run `scripts/gg-evidence` with the equivalent `index` subcommand. Print the structured JSON result. Never edit authoritative YAML or JSONL from this command.
+Run `scripts/gg-evidence` with the equivalent `index` subcommand. Print the
+structured JSON result including its complete `validation_report` envelope.
+Never edit authoritative YAML or JSONL from this command.

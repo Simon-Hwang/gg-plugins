@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Maintain"
-  short_description: "Continuously revalidate claims with runtime evidence"
-  default_prompt: "Maintain evidence-backed knowledge from its Domain Manifest, routing changed claims to resynthesis without editing immutable publications."
+  short_description: "Incrementally or periodically revalidate evidence"
+  default_prompt: "Incrementally or periodically maintain evidence-backed knowledge from its Domain Manifest, preserving validation_report metadata and routing changed claims to resynthesis without implying a scheduler or editing immutable publications."

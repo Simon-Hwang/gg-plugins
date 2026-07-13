@@ -342,6 +342,86 @@ test("profile validator accepts a bounded minimal profile", () => {
   assert.equal(JSON.parse(result.stdout).ok, true);
 });
 
+test("validator output records implementation, invocation, inputs, and result hash", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-report-"));
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    "repository_roots: [repos]",
+    "finding_sink: audits",
+    "",
+  ].join("\n"));
+  const result = run(["--profile", profile, "profile", "validate"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const output = JSON.parse(result.stdout);
+  assert.equal(output.validation_report.schema_version, "1");
+  assert.equal(output.validation_report.validator.name, "gg-evidence");
+  assert.match(output.validation_report.validator.implementation_hash,
+    /^sha256:[a-f0-9]{64}$/);
+  assert.ok(Object.hasOwn(output.validation_report.validator, "source_commit"));
+  assert.deepEqual(output.validation_report.invocation.argv.slice(-2),
+    ["profile", "validate"]);
+  assert.equal(output.validation_report.inputs[0].role, "profile");
+  assert.match(output.validation_report.inputs[0].sha256,
+    /^sha256:[a-f0-9]{64}$/);
+  assert.match(output.validation_report.result_hash, /^sha256:[a-f0-9]{64}$/);
+  assert.equal(output.validation_report.result.ok, true);
+  assert.equal(output.validation_report.result.error_count, 0);
+});
+
+test("observe approval bundle rejects unknown and cross-capability item types", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-observe-approval-"));
+  const bundle = path.join(dir, "observe-approval.json");
+  const value = {
+    schema_version: "1",
+    bundle_id: "observe-approval-1",
+    run_id: "observe-run-1",
+    status: "pending-approval",
+    created_at: "2026-07-13T00:00:00Z",
+    source_versions: [{ source: "repository-a", version: "commit-a" }],
+    items: [{
+      item_id: "wiki-fix-1",
+      type: "reference-fix",
+      target: "wiki/overview.md",
+      target_hash: `sha256:${"a".repeat(64)}`,
+      candidate_patch: "candidate-patches/overview.patch",
+      required_roles: ["wiki-maintainer"],
+    }],
+  };
+  writeJson(bundle, value);
+  let result = run([
+    "--observe-approval-bundle", bundle,
+    "observe-approval-bundles", "validate",
+  ]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  value.items[0].type = "cross-capability-tool-change";
+  writeJson(bundle, value);
+  result = run([
+    "--observe-approval-bundle", bundle,
+    "observe-approval-bundles", "validate",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /items\[0\]\.type is unknown or not executable/);
+});
+
+test("docs prompt surfaces remain aligned on runtime observation and maintenance", () => {
+  const observeCommand = fs.readFileSync(path.join(
+    repo, "plugins/gg/commands/docs-observe.md"), "utf8");
+  const observeInterface = fs.readFileSync(path.join(
+    repo, "plugins/gg/skills/docs-observe/agents/openai.yaml"), "utf8");
+  const maintainInterface = fs.readFileSync(path.join(
+    repo, "plugins/gg/skills/docs-maintain/agents/openai.yaml"), "utf8");
+  assert.match(observeCommand, /static and runtime/i);
+  assert.match(observeCommand, /healthy.*provider/i);
+  assert.match(observeInterface, /static and runtime/i);
+  assert.match(observeInterface, /healthy.*provider/i);
+  assert.doesNotMatch(maintainInterface, /continuously/i);
+  assert.match(maintainInterface, /incrementally or periodically/i);
+});
+
 test("observation request validator accepts runtime requests with freshness", () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-requests-"));
   fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
@@ -385,6 +465,282 @@ test("observation request validator rejects missing freshness", () => {
   const result = run(["--root", dir, "observation-requests", "validate"]);
   assert.equal(result.status, 2);
   assert.match(result.stdout, /freshness/);
+});
+
+test("runtime promotion audit fails routable requests without runtime evidence", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-runtime-audit-"));
+  const command = path.join(dir, "provider.sh");
+  fs.writeFileSync(command, "#!/bin/sh\nexit 0\n");
+  fs.chmodSync(command, 0o755);
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    "repository_roots: [repos]",
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    `        command: ${command}`,
+    "        supports: [example.config.read]",
+    "",
+  ].join("\n"));
+  fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/observation-requests/requests.jsonl"),
+    `${JSON.stringify({
+      schema_version: "1",
+      id: "OR-runtime-001",
+      kind: "runtime-observation-request",
+      subject: "runtime://config/example",
+      claim_ids: ["claim-a"],
+      provider_hints: ["example-provider"],
+      capability: "example.config.read",
+      query: { key: "example" },
+      required_scope: { environment: "online" },
+      expected_evidence_type: "runtime_config",
+      freshness: { max_age: "6h" },
+    })}\n`);
+  const result = run([
+    "--root", dir,
+    "--profile", profile,
+    "observation-requests",
+    "audit-runtime-promotion",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /routable-request-has-no-runtime-evidence/);
+});
+
+test("runtime promotion audit requires runtime evidence to reach verdicts", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-runtime-audit-"));
+  const command = path.join(dir, "provider.sh");
+  fs.writeFileSync(command, "#!/bin/sh\nexit 0\n");
+  fs.chmodSync(command, 0o755);
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    "repository_roots: [repos]",
+    "finding_sink: audits",
+    "adapters:",
+    "  runtime_observation:",
+    "    providers:",
+    "      - id: example-provider",
+    "        type: runtime_config",
+    `        command: ${command}`,
+    "        supports: [example.config.read]",
+    "",
+  ].join("\n"));
+  fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/observation-requests/requests.jsonl"),
+    `${JSON.stringify({
+      schema_version: "1",
+      id: "OR-runtime-001",
+      kind: "runtime-observation-request",
+      subject: "runtime://config/example",
+      claim_ids: ["claim-a"],
+      provider_hints: ["example-provider"],
+      capability: "example.config.read",
+      query: { key: "example" },
+      required_scope: { environment: "online" },
+      expected_evidence_type: "runtime_config",
+      freshness: { max_age: "6h" },
+    })}\n`);
+  fs.mkdirSync(path.join(dir, "evidence/audit/run"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/evidence.jsonl"),
+    `${JSON.stringify({
+      evidence_id: "EV-runtime-001",
+      type: "runtime_config",
+      provider_id: "example-provider",
+      capability: "example.config.read",
+      status: "runtime-supported-sample",
+      observed_at: "2026-07-08T00:00:00Z",
+    })}\n`);
+  let result = run([
+    "--root", dir,
+    "--profile", profile,
+    "observation-requests",
+    "audit-runtime-promotion",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /runtime-evidence-not-referenced-by-verdict/);
+
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/verdicts.jsonl"),
+    `${JSON.stringify({
+      verdict_id: "V-runtime-001",
+      claim_id: "claim-a",
+      verdict: "runtime-supported",
+      evidence_ids: ["EV-runtime-001"],
+    })}\n`);
+  result = run([
+    "--root", dir,
+    "--profile", profile,
+    "observation-requests",
+    "audit-runtime-promotion",
+  ]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(JSON.parse(result.stdout).data.gate_passed, true);
+});
+
+test("consistency audit rejects stale open request with terminal runtime verdict", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-consistency-"));
+  fs.mkdirSync(path.join(dir, "evidence/observation-requests"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/observation-requests/requests.jsonl"),
+    `${JSON.stringify({
+      schema_version: "1",
+      id: "OR-runtime-001",
+      kind: "runtime-observation-request",
+      subject: "runtime://config/example",
+      claim_ids: ["claim-a"],
+      provider_hints: ["example-provider"],
+      capability: "example.config.read",
+      query: { key: "example" },
+      required_scope: { environment: "online" },
+      expected_evidence_type: "runtime_config",
+      freshness: { max_age: "6h" },
+      status: "open",
+      degrade_reason: "missing-runtime-evidence",
+    })}\n`);
+  fs.mkdirSync(path.join(dir, "evidence/audit/run"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/evidence.jsonl"),
+    `${JSON.stringify({
+      evidence_id: "EV-runtime-001",
+      type: "runtime_config",
+      provider_id: "example-provider",
+      capability: "example.config.read",
+      status: "runtime-supported-sample",
+      observed_at: "2026-07-08T00:00:00Z",
+    })}\n`);
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/verdicts.jsonl"),
+    `${JSON.stringify({
+      verdict_id: "V-runtime-001",
+      claim_id: "claim-a",
+      verdict: "runtime-supported",
+      evidence_ids: ["EV-runtime-001"],
+      observation_request_ids: ["OR-runtime-001"],
+    })}\n`);
+  const result = run(["--root", dir, "consistency", "audit"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /open observation request has terminal runtime verdict/);
+});
+
+test("consistency audit rejects publication manifest that drops runtime support evidence", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-consistency-"));
+  fs.mkdirSync(path.join(dir, "evidence/audit/run"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/evidence.jsonl"),
+    `${JSON.stringify({
+      evidence_id: "EV-runtime-001",
+      type: "runtime_log",
+      provider_id: "example-provider",
+      capability: "example.request_pair",
+      status: "runtime-supported-sample",
+      evidence_role: "accepted-runtime-support",
+    })}\n`);
+  const domain = path.join(dir, "knowledge/domains/example-domain");
+  writeJson(path.join(domain, "manifest.json"), {
+    domain_id: "example-domain",
+    current_publication_id: "example-publication-v1",
+    context: {
+      manifest: "publications/example-publication-v1/context/context-manifest.json",
+    },
+    freshness: {
+      runtime_supported_evidence: [],
+      runtime_degraded_evidence: [],
+    },
+  });
+  writeJson(path.join(
+    domain,
+    "publications/example-publication-v1/context/context-manifest.json",
+  ), {
+    publication_id: "example-publication-v1",
+    evidence_ids: ["evidence://EV-runtime-001"],
+  });
+  const result = run(["--root", dir, "consistency", "audit"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /runtime_supported_evidence omits it/);
+});
+
+test("runtime promotion audit includes publication consistency failures", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-runtime-audit-"));
+  const profile = path.join(dir, "profile.yaml");
+  fs.writeFileSync(profile, [
+    'profile_version: "1"',
+    "profile_id: example-domain",
+    "document_roots: [wiki]",
+    "repository_roots: [repos]",
+    "finding_sink: audits",
+    "",
+  ].join("\n"));
+  fs.mkdirSync(path.join(dir, "evidence/audit/run"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "evidence/audit/run/evidence.jsonl"),
+    `${JSON.stringify({
+      evidence_id: "EV-runtime-001",
+      type: "runtime_log",
+      provider_id: "example-provider",
+      capability: "example.request_pair",
+      status: "runtime-supported-sample",
+      evidence_role: "accepted-runtime-support",
+    })}\n`);
+  const domain = path.join(dir, "knowledge/domains/example-domain");
+  writeJson(path.join(domain, "manifest.json"), {
+    domain_id: "example-domain",
+    current_publication_id: "example-publication-v1",
+    context: {
+      manifest: "publications/example-publication-v1/context/context-manifest.json",
+    },
+    freshness: {
+      runtime_supported_evidence: [],
+      runtime_degraded_evidence: [],
+    },
+  });
+  writeJson(path.join(
+    domain,
+    "publications/example-publication-v1/context/context-manifest.json",
+  ), {
+    publication_id: "example-publication-v1",
+    evidence_ids: ["evidence://EV-runtime-001"],
+  });
+
+  const result = run([
+    "--root", dir,
+    "--profile", profile,
+    "observation-requests",
+    "audit-runtime-promotion",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /runtime_supported_evidence omits it/);
+});
+
+test("storage validation keeps run time out of evidence directory names", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gg-evidence-storage-"));
+  fs.mkdirSync(path.join(dir, "evidence/audit/order-selection/current"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/stages/synthesis-order-selection"), { recursive: true });
+  fs.mkdirSync(path.join(dir, "evidence/publications/order-selection-v1"), { recursive: true });
+  fs.mkdirSync(path.join(
+    dir,
+    "knowledge/domains/order-selection/publications/order-selection-v1",
+  ), { recursive: true });
+  let result = run(["--root", dir, "storage", "validate"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  fs.mkdirSync(path.join(
+    dir,
+    "evidence/audit/order-selection-20260708T000000+0800",
+  ), { recursive: true });
+  result = run(["--root", dir, "storage", "validate"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /timestamp belongs in manifest metadata/);
+
+  fs.mkdirSync(path.join(
+    dir,
+    "knowledge/domains/order-selection/publications/order-selection-20260708T000000Z",
+  ), { recursive: true });
+  result = run(["--root", dir, "storage", "validate"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /knowledge/);
 });
 
 test("adapter preflight reports runtime observation providers generically", () => {
@@ -959,6 +1315,10 @@ test("publication apply and rollback are deterministic", () => {
   result = run(["--root", root, "publications", "apply",
     "--stage-id", "stage-1", "--publication-id", "publication-1"]);
   assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,
+    "evidence/stages/stage-1/stage-manifest.json"))).status, "applied");
+  result = run(["--root", root, "lifecycle", "audit"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.equal(fs.readFileSync(path.join(root, "wiki/overview.md"), "utf8"),
     "# Overview\n\nEvidence-backed overview.\n");
   assert.equal(fs.existsSync(path.join(
@@ -981,6 +1341,39 @@ test("publication apply and rollback are deterministic", () => {
   ]);
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.equal(fs.existsSync(path.join(root, "wiki/overview.md")), false);
+});
+
+test("lifecycle audit rejects a published record whose stage is not applied", () => {
+  const { root, bundle, policy, approval } = createPublicationFixture();
+  let result = run([
+    "--root", root, "--policy", policy, "--bundle", bundle,
+    "--approval", approval, "publications", "stage", "--stage-id", "stage-state",
+  ]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const stage = JSON.parse(result.stdout).data.stage;
+  const review = path.join(root, "review-state.json");
+  writeJson(review, {
+    schema_version: "1",
+    stage_id: "stage-state",
+    staged_tree_hash: stage.staged_tree_hash,
+    verdict: "pass",
+    reviewer: "reviewer",
+  });
+  result = run(["--root", root, "publications", "review-record",
+    "--stage-id", "stage-state", "--review-record", review]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  result = run(["--root", root, "publications", "apply",
+    "--stage-id", "stage-state", "--publication-id", "publication-state"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  const stagePath = path.join(root,
+    "evidence/stages/stage-state/stage-manifest.json");
+  const stageValue = JSON.parse(fs.readFileSync(stagePath));
+  stageValue.status = "ready-to-apply";
+  writeJson(stagePath, stageValue);
+  result = run(["--root", root, "lifecycle", "audit"]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout, /published publication requires stage status applied/);
 });
 
 test("knowledge publication atomically advances publication, manifest, registry, and gateway", () => {
@@ -1081,10 +1474,18 @@ test("human review drafts are required and remain separate from publishable know
   fs.writeFileSync(path.join(bundle, "review-drafts/overview.md"), [
     "# Human review",
     "## 一分钟结论",
+    "建议审批 example-overview，对应 change create-overview；当前结论由 [E1] 支撑，剩余问题不阻塞发布。",
     "## 业务全景图",
+    "example-overview 覆盖 owner 需要确认的主链路、责任边界和已知缺口，证据锚点为 claim://claim-a@1。",
     "## 关键决策表",
+    "| 审批项 | 建议 | 依据 |",
+    "| --- | --- | --- |",
+    "| example-overview | 通过 | [E1] 与当前 Blueprint 覆盖一致 |",
     "## 待确认事项",
+    "没有阻塞项；后续仅需在运行时证据过期时重新观察并刷新本草稿。",
     "## Knowledge sources",
+    "- example-overview",
+    "- claim://claim-a@1",
     "",
   ].join("\n"));
   const manifestPath = path.join(bundle, "synthesis-manifest.json");
@@ -1121,6 +1522,15 @@ test("human review drafts are required and remain separate from publishable know
   const plan = JSON.parse(result.stdout).data.plan;
   assert.equal(plan.artifacts.some((item) =>
     item.target.includes("review-drafts")), false);
+
+  fs.writeFileSync(path.join(bundle, "review-drafts/overview.md"),
+    "# Human review\n\n## 一分钟结论\n## 业务全景图\n## 关键决策表\n## 待确认事项\n## Knowledge sources\n");
+  result = run([
+    "--bundle", bundle, "--blueprint", blueprint, "synthesis", "validate",
+  ]);
+  assert.equal(result.status, 2);
+  assert.match(result.stdout,
+    /review draft required section has no reviewer-facing content: 一分钟结论/);
 
   fs.writeFileSync(path.join(bundle, "review-drafts/overview.md"),
     "# Human review\n\n## 一分钟结论\n");
@@ -1186,6 +1596,11 @@ test("post-publish validation rolls back and preserves failed record", () => {
     "evidence/publications/publication-invalid/publication-manifest.json")));
   assert.equal(record.status, "validation-failed");
   assert.match(record.error, /broken markdown link/);
+  const failedStage = JSON.parse(fs.readFileSync(path.join(root,
+    "evidence/stages/stage-invalid/stage-manifest.json")));
+  assert.equal(failedStage.status, "apply-failed");
+  result = run(["--root", root, "lifecycle", "audit"]);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
 });
 
 test("generic evidence assets contain no registered domain terms", () => {

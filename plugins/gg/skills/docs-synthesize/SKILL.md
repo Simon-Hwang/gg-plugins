@@ -30,7 +30,14 @@ Run deterministic preflight:
 scripts/gg-evidence --blueprint <path> blueprints validate
 scripts/gg-evidence --root <root> claims validate
 scripts/gg-evidence --root <root> index validate
+scripts/gg-evidence --root <root> consistency audit
+scripts/gg-evidence --root <root> storage validate
 ```
+
+Preserve each command's complete CLI `validation_report` in Bundle reports.
+Do not accept a copied or model-authored PASS without the validator
+implementation hash, source commit, invocation, explicit input hashes, and
+result hash.
 
 ## Workflow
 
@@ -41,9 +48,13 @@ scripts/gg-evidence --root <root> index validate
 5. Ask `knowledge-architect` to map Blueprint slots into documents without inventing a domain structure.
 6. Ask `evidence-knowledge-writer` to generate compact publishable
    `agent-knowledge/` documents from eligible Claim revisions.
-7. Derive richer `review-drafts/` from Agent Knowledge and the Context Pack.
-   Prefer diagrams, matrices, scenario walkthroughs, and grouped confirmations
-   when they improve comprehension; do not impose presentation quotas.
+7. Derive decision-ready `review-drafts/` from Agent Knowledge and the
+   Context Pack. Treat them as the owner approval surface: a business-owner or
+   code-owner must be able to reach an approve/reject/needs-work decision from
+   the draft itself, without manually stitching together `agent-knowledge/`,
+   gaps, coverage reports, Observation Requests, or raw ledgers. Prefer
+   diagrams, matrices, scenario walkthroughs, and grouped confirmations when
+   they improve comprehension; do not impose presentation quotas.
 8. Build the mandatory Context Pack: manifest, bilingual/task-aware retrieval
    cards, typed topology, distributed impact index, and slot-specific gaps.
 9. Build statement sidecars that bind every factual Agent Knowledge paragraph to existing
@@ -70,6 +81,11 @@ scripts/gg-evidence --root <root> index validate
   fresh under the stricter of provider freshness and the originating
   Observation Request's `freshness.max_age`. Stale runtime Evidence becomes a
   gap or constrained statement, never an unconditional runtime fact.
+- Do not synthesize from an evidence store that fails `consistency audit`.
+  Runtime-supported Verdicts with stale open Observation Requests, degraded or
+  health-only Evidence in terminal runtime Verdicts, or Domain Manifests that
+  omit runtime-supported Evidence from their freshness ledger must be repaired
+  by Observe/Maintain before drafting.
 - Keep Intent, Decision, Static Implementation, Runtime Observation, Conflict, and Gap distinct.
 - Never turn `partial`, `unknown`, `requires-runtime-evidence`, or `disputed` into an unconditional statement.
 - Treat generated diagrams as views; evidence-backed JSONL topology is authoritative.
@@ -79,8 +95,11 @@ scripts/gg-evidence --root <root> index validate
 - `example` records require `non_factual: true` and cannot contain Claim or
   Evidence markers. `gap` records describe unknowns only and cannot smuggle in
   supported facts.
-- Review drafts are non-authoritative projections. They must declare the
-  Knowledge IDs they cover and cannot introduce facts absent from those
+- Review drafts are non-authoritative projections, but they are not structural
+  placeholders. They must declare the Knowledge IDs they cover, include
+  reviewer-facing content in every template-required section, summarize the
+  decision, evidence anchors, freshness constraints, open gaps, and owner
+  actions needed for approval, and cannot introduce facts absent from the
   publishable documents. Semantic feedback must update Agent Knowledge first;
   only presentation edits may remain review-only.
 - Cover every template-required section, every Blueprint slot, and every
@@ -88,6 +107,10 @@ scripts/gg-evidence --root <root> index validate
   `publication_allowed`, Stage state, or Approval state from business prose.
 - Treat `knowledge/**` target hints as routing metadata only. Write only the
   configured Synthesis Bundle and never update Registry or canonical targets.
+- Use stable Synthesis Bundle and Stage identifiers. Do not encode wall-clock
+  timestamps in bundle, `evidence/stages/**`, or review artifact directory
+  names; record `created_at`, `freshness_checked_at`, and source freshness in
+  manifests instead.
 
 ## Completion
 
@@ -95,4 +118,4 @@ Complete only when Blueprint coverage is reported, Agent Knowledge passes
 traceability and retrieval checks, all required review drafts map to the
 publishable Knowledge IDs, the Context Pack is complete, unsupported
 statements and dangling Coordinates are zero, and an approval-ready Synthesis
-Bundle exists.
+Bundle exists. Run consistency and storage validation before handoff.

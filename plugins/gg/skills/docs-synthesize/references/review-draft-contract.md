@@ -16,13 +16,22 @@ required_sections: [一分钟结论, 业务流程, 关键分支, 待确认事项
 The Synthesis Manifest mirrors it in `review_artifacts[]` with `review_id`,
 Bundle-relative `source`, and identical `covers_knowledge_ids`.
 
-Review drafts should make approval easier through whichever forms fit the
-evidence: plain-language summaries, Mermaid views, stage tables, responsibility
-matrices, scenario walkthroughs, regression checklists, or grouped gaps. None
-is a universal count-based gate.
+Review drafts must be decision-ready owner packets, not structural shells. A
+business-owner or code-owner should be able to decide approve, reject, or
+needs-work from `review-drafts/**` itself, without opening `agent-knowledge/`,
+coverage reports, grouped gaps, Observation Requests, or raw ledgers to assemble
+the argument. Those artifacts remain the traceable substrate; the review draft
+is the readable synthesis.
 
-Review drafts do not maintain duplicate paragraph sidecars. They must cite the
-covered Knowledge IDs and use the same Evidence anchors or Coordinates when
+Review drafts should make approval easier through whichever forms fit the
+evidence: plain-language conclusions, evidence summaries, Mermaid views, stage
+tables, responsibility matrices, scenario walkthroughs, regression checklists,
+freshness notes, runtime-vs-static distinction, owner action lists, or grouped
+gaps. None is a universal count-based gate.
+
+Review drafts do not maintain duplicate paragraph sidecars. They must name the
+covered Knowledge IDs, include reviewer-facing content under every declared
+required section, and use the same Evidence anchors or Coordinates when
 drilling down. They cannot introduce a fact absent from their mapped Agent
 Knowledge.
 

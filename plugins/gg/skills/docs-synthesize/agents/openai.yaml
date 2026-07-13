@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Synthesize"
   short_description: "Build human review drafts and publishable Agent knowledge"
-  default_prompt: "Synthesize validated claims into rich human review drafts, compact traceable Agent Knowledge, and a locator-ready typed Context Pack."
+  default_prompt: "Synthesize validated claims into rich human review drafts, compact traceable Agent Knowledge, and a locator-ready typed Context Pack while preserving every deterministic gate's validation_report metadata."

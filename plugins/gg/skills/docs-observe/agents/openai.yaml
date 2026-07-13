@@ -1,4 +1,4 @@
 interface:
   display_name: "Docs Observe"
-  short_description: "Map document claims to static implementation evidence"
-  default_prompt: "Observe this documentation set and produce evidence-backed static verdicts."
+  short_description: "Map claims to bounded static and runtime evidence"
+  default_prompt: "Observe this documentation set using pinned static sources and safe scoped runtime queries through healthy profile-declared providers; preserve validation_report metadata and degrade unsupported online claims explicitly."

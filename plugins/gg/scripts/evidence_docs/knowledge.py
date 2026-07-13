@@ -21,6 +21,13 @@ CONTEXT_FILES = (
 )
 CHANGE_TYPES = {"create", "replace", "merge", "redirect", "archive", "metadata-only"}
 IMPLEMENTED_CHANGE_TYPES = {"create", "replace"}
+OBSERVE_APPROVAL_ITEM_TYPES = {
+    "reference-fix",
+    "business-intent-change",
+    "implementation-assertion-change",
+    "mixed-semantic-change",
+}
+OBSERVE_APPROVAL_ROLES = {"wiki-maintainer", "business-owner", "code-owner"}
 FULL_VERDICTS = {
     "static-supported", "runtime-supported", "verified-static",
     "verified-runtime", "supported",
@@ -39,6 +46,10 @@ CLAIM_MARKER_PATTERN = re.compile(r"\[(?:Claim|Verdict|Evidence)\s*:", re.IGNORE
 COORDINATE_PATTERN = re.compile(
     r"^(?P<scheme>knowledge|claim|evidence|finding|code)://(?P<body>.+)$"
 )
+MARKDOWN_HEADING_PATTERN = re.compile(
+    r"(?m)^(?P<level>#{1,6})\s+(?P<title>.+?)\s*$"
+)
+MIN_REVIEW_SECTION_CHARS = 16
 
 
 def load_structured(path: Path) -> dict[str, Any]:
@@ -83,6 +94,51 @@ def _safe_relative(value: Any, field: str) -> tuple[PurePosixPath | None, str | 
     if path.is_absolute() or ".." in path.parts:
         return None, f"{field} must not be absolute or contain '..': {value}"
     return path, None
+
+
+def _markdown_section_body(text: str, section: str) -> str | None:
+    matches = list(MARKDOWN_HEADING_PATTERN.finditer(text))
+    for index, match in enumerate(matches):
+        if match.group("title").strip() != section:
+            continue
+        level = len(match.group("level"))
+        end = len(text)
+        for next_match in matches[index + 1:]:
+            if len(next_match.group("level")) <= level:
+                end = next_match.start()
+                break
+        return text[match.end():end]
+    return None
+
+
+def validate_review_draft_surface(
+    source: str,
+    text: str,
+    required_sections: list[Any],
+    covers_knowledge_ids: set[str],
+) -> list[str]:
+    errors: list[str] = []
+    for section_value in required_sections:
+        section = str(section_value)
+        body = _markdown_section_body(text, section)
+        if body is None:
+            errors.append(
+                f"{source}: review draft required section missing: {section}"
+            )
+            continue
+        body_text = re.sub(r"\s+", " ", body).strip()
+        if len(body_text) < MIN_REVIEW_SECTION_CHARS:
+            errors.append(
+                f"{source}: review draft required section has no "
+                f"reviewer-facing content: {section}"
+            )
+    for knowledge_id in sorted(covers_knowledge_ids):
+        if knowledge_id and knowledge_id not in text:
+            errors.append(
+                f"{source}: review draft does not name covered knowledge_id: "
+                f"{knowledge_id}"
+            )
+    return errors
 
 
 def validate_blueprint(value: dict[str, Any], path: Path | None = None) -> list[str]:
@@ -668,14 +724,12 @@ def validate_synthesis_bundle(
                         f"review draft knowledge coverage mismatch: {review_id}"
                     )
                 text = source_path.read_text(encoding="utf-8")
-                for section in review_document.get("required_sections", []):
-                    if not re.search(
-                        rf"(?m)^#+\s+{re.escape(str(section))}\s*$", text,
-                    ):
-                        errors.append(
-                            f"{source}: review draft required section missing: "
-                            f"{section}"
-                        )
+                errors.extend(validate_review_draft_surface(
+                    str(source),
+                    text,
+                    list(review_document.get("required_sections", [])),
+                    expected_covers,
+                ))
         approval_bundle = bundle / "approval-bundle.md"
         if not approval_bundle.is_file():
             errors.append("approval-bundle.md is required")
@@ -854,6 +908,104 @@ def validate_approval(
                 errors.append(f"{prefix}decisions[{index}].change_id is required")
             if decision.get("decision") not in {"approve", "reject", "defer"}:
                 errors.append(f"{prefix}decisions[{index}].decision is invalid")
+    return errors
+
+
+def validate_observe_approval_bundle(
+    value: dict[str, Any],
+    path: Path | None = None,
+) -> list[str]:
+    """Validate the executable Wiki-only approval contract from docs-observe."""
+    prefix = f"{path}: " if path else ""
+    errors: list[str] = []
+    allowed_fields = {
+        "schema_version", "bundle_id", "run_id", "status", "created_at",
+        "source_versions", "items", "approvals", "notes",
+    }
+    unknown_fields = sorted(set(value) - allowed_fields)
+    for field in unknown_fields:
+        errors.append(f"{prefix}unknown field {field}")
+    for field in (
+        "schema_version", "bundle_id", "run_id", "status", "created_at",
+        "source_versions", "items",
+    ):
+        if field not in value:
+            errors.append(f"{prefix}missing required field {field}")
+    if value.get("schema_version") != "1":
+        errors.append(f'{prefix}schema_version must be "1"')
+    if value.get("status") not in {
+        "pending-approval", "partially-approved", "approved", "applied",
+        "rejected", "stale",
+    }:
+        errors.append(f"{prefix}status is invalid")
+    source_versions = value.get("source_versions")
+    if not isinstance(source_versions, list) or not source_versions:
+        errors.append(f"{prefix}source_versions must be a non-empty list")
+    items = value.get("items")
+    if not isinstance(items, list) or not items:
+        errors.append(f"{prefix}items must be a non-empty list")
+        return errors
+    seen: set[str] = set()
+    item_fields = {
+        "item_id", "type", "target", "target_hash", "candidate_patch",
+        "required_roles", "claim_ids", "finding_ids", "description",
+    }
+    for index, item in enumerate(items):
+        item_prefix = f"{prefix}items[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{item_prefix} must be an object")
+            continue
+        for field in sorted(set(item) - item_fields):
+            errors.append(f"{item_prefix} has unknown field {field}")
+        for field in (
+            "item_id", "type", "target", "target_hash", "candidate_patch",
+            "required_roles",
+        ):
+            if field not in item:
+                errors.append(f"{item_prefix}.{field} is required")
+        item_id = item.get("item_id")
+        if item_id in seen:
+            errors.append(f"{item_prefix}.item_id is duplicated: {item_id}")
+        if isinstance(item_id, str):
+            seen.add(item_id)
+        item_type = item.get("type")
+        if item_type not in OBSERVE_APPROVAL_ITEM_TYPES:
+            errors.append(
+                f"{item_prefix}.type is unknown or not executable by docs-approve"
+            )
+        target, target_error = _safe_relative(item.get("target"), f"items[{index}].target")
+        if target_error:
+            errors.append(f"{prefix}{target_error}")
+        elif not str(target).startswith("wiki/"):
+            errors.append(f"{item_prefix}.target must be under wiki/")
+        patch, patch_error = _safe_relative(
+            item.get("candidate_patch"), f"items[{index}].candidate_patch",
+        )
+        if patch_error:
+            errors.append(f"{prefix}{patch_error}")
+        elif not str(patch).startswith("candidate-patches/"):
+            errors.append(
+                f"{item_prefix}.candidate_patch must be under candidate-patches/"
+            )
+        if not re.fullmatch(r"sha256:[a-f0-9]{64}", str(item.get("target_hash", ""))):
+            errors.append(f"{item_prefix}.target_hash must be a sha256 fingerprint")
+        roles = item.get("required_roles")
+        if not isinstance(roles, list) or not roles:
+            errors.append(f"{item_prefix}.required_roles must be a non-empty list")
+            roles = []
+        unknown_roles = sorted(set(str(role) for role in roles) - OBSERVE_APPROVAL_ROLES)
+        if unknown_roles:
+            errors.append(f"{item_prefix}.required_roles contains unknown roles")
+        required_by_type = {
+            "reference-fix": {"wiki-maintainer"},
+            "business-intent-change": {"business-owner"},
+            "implementation-assertion-change": {"code-owner"},
+            "mixed-semantic-change": {"business-owner", "code-owner"},
+        }.get(str(item_type), set())
+        if not required_by_type.issubset(set(roles)):
+            errors.append(
+                f"{item_prefix}.required_roles does not satisfy {item_type}"
+            )
     return errors
 
 
@@ -1413,6 +1565,16 @@ def apply_publication(
     if manifest_path.exists():
         existing = load_structured(manifest_path)
         if existing.get("status") == "published" and existing.get("bundle_hash") == plan.get("bundle_hash"):
+            stage_manifest_path = stage / "stage-manifest.json"
+            stage_manifest = load_structured(stage_manifest_path)
+            stage_manifest.update({
+                "status": "applied",
+                "publication_id": publication_id,
+                "publication_status": "published",
+                "publication_manifest": manifest_path.relative_to(root).as_posix(),
+                "applied_at": existing.get("published_at") or now_iso(),
+            })
+            _atomic_json(stage_manifest_path, stage_manifest)
             return existing
         raise ValidationFailure(f"publication record already exists: {publication_id}")
     applied: list[dict[str, Any]] = []
@@ -1466,6 +1628,16 @@ def apply_publication(
             "publication_id": publication_id,
             "artifacts": applied,
         })
+        stage_manifest_path = stage / "stage-manifest.json"
+        stage_manifest = load_structured(stage_manifest_path)
+        stage_manifest.update({
+            "status": "applied",
+            "publication_id": publication_id,
+            "publication_status": "published",
+            "publication_manifest": manifest_path.relative_to(root).as_posix(),
+            "applied_at": manifest["published_at"],
+        })
+        _atomic_json(stage_manifest_path, stage_manifest)
         return manifest
     except Exception as exc:
         for artifact in reversed(applied):
@@ -1483,6 +1655,17 @@ def apply_publication(
             "artifacts": applied,
         }
         _atomic_json(manifest_path, failed)
+        stage_manifest_path = stage / "stage-manifest.json"
+        stage_manifest = load_structured(stage_manifest_path)
+        stage_manifest.update({
+            "status": "apply-failed",
+            "publication_id": publication_id,
+            "publication_status": "validation-failed",
+            "publication_manifest": manifest_path.relative_to(root).as_posix(),
+            "failed_at": failed["failed_at"],
+            "error": str(exc),
+        })
+        _atomic_json(stage_manifest_path, stage_manifest)
         raise
 
 
@@ -1507,6 +1690,14 @@ def rollback_publication(root: Path, publication_id: str) -> dict[str, Any]:
     manifest["status"] = "rolled-back"
     manifest["rolled_back_at"] = now_iso()
     _atomic_json(manifest_path, manifest)
+    stage_id = manifest.get("stage_id")
+    if isinstance(stage_id, str):
+        stage_manifest_path = root / "evidence" / "stages" / stage_id / "stage-manifest.json"
+        if stage_manifest_path.is_file():
+            stage_manifest = load_structured(stage_manifest_path)
+            stage_manifest["publication_status"] = "rolled-back"
+            stage_manifest["rolled_back_at"] = manifest["rolled_back_at"]
+            _atomic_json(stage_manifest_path, stage_manifest)
     return manifest
 
 
@@ -1534,6 +1725,160 @@ def validate_publication(root: Path, publication_id: str) -> list[str]:
     if manifest.get("status") == "published":
         errors.extend(validate_published_targets(root, manifest.get("artifacts", [])))
     return errors
+
+
+def audit_lifecycle_state(root: Path) -> dict[str, Any]:
+    """Check cross-artifact state bindings for approval-gated publications."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    stage_paths = sorted((root / "evidence" / "stages").glob("*/stage-manifest.json"))
+    publication_paths = sorted(
+        (root / "evidence" / "publications").glob("*/publication-manifest.json")
+    )
+    stages: dict[str, dict[str, Any]] = {}
+    publications: dict[str, dict[str, Any]] = {}
+    stage_statuses = {
+        "awaiting-semantic-review", "ready-to-apply", "applied", "apply-failed",
+    }
+    publication_statuses = {
+        "published", "rolled-back", "validation-failed", "superseded",
+    }
+
+    for path in stage_paths:
+        try:
+            stage = load_structured(path)
+        except ValidationFailure as exc:
+            errors.append(str(exc))
+            continue
+        stage_id = stage.get("stage_id")
+        if not isinstance(stage_id, str) or not stage_id:
+            errors.append(f"{path}: stage_id is required")
+            continue
+        if stage_id in stages:
+            errors.append(f"{path}: duplicate stage_id {stage_id}")
+        stages[stage_id] = stage
+        status = stage.get("status")
+        if status not in stage_statuses:
+            errors.append(f"{path}: unknown stage status {status!r}")
+        review_path = path.parent / "semantic-review.json"
+        if status == "awaiting-semantic-review" and review_path.exists():
+            errors.append(f"{path}: awaiting stage must not have a semantic review")
+        if status in {"ready-to-apply", "applied", "apply-failed"} and not review_path.is_file():
+            errors.append(f"{path}: {status} stage requires a semantic review")
+        approval = stage.get("approval_decision")
+        if isinstance(approval, dict):
+            if approval.get("status") != "approved":
+                errors.append(f"{path}: staged approval decision is not approved")
+            if approval.get("synthesis_id") != stage.get("synthesis_id"):
+                errors.append(f"{path}: approval synthesis_id does not match stage")
+            if approval.get("bundle_hash") != stage.get("bundle_hash"):
+                errors.append(f"{path}: approval bundle_hash does not match stage")
+            expected_hash = stage.get("approval_hash")
+            if expected_hash and canonical_fingerprint(approval) != expected_hash:
+                errors.append(f"{path}: approval_hash does not match staged decision")
+        elif status in {"ready-to-apply", "applied", "apply-failed"}:
+            errors.append(f"{path}: {status} stage requires approval_decision")
+
+    for path in publication_paths:
+        try:
+            publication = load_structured(path)
+        except ValidationFailure as exc:
+            errors.append(str(exc))
+            continue
+        publication_id = publication.get("publication_id")
+        if not isinstance(publication_id, str) or not publication_id:
+            errors.append(f"{path}: publication_id is required")
+            continue
+        if publication_id in publications:
+            errors.append(f"{path}: duplicate publication_id {publication_id}")
+        publications[publication_id] = publication
+        status = publication.get("status")
+        if status not in publication_statuses:
+            errors.append(f"{path}: unknown publication status {status!r}")
+        stage_id = publication.get("stage_id")
+        stage = stages.get(str(stage_id)) if stage_id else None
+        if status in {"published", "rolled-back"}:
+            if stage is None:
+                errors.append(f"{path}: {status} publication requires an existing stage")
+                continue
+            if stage.get("status") != "applied":
+                errors.append(
+                    f"{path}: published publication requires stage status applied"
+                )
+            for field in (
+                "synthesis_id", "bundle_hash", "policy_id", "approval_id",
+            ):
+                if publication.get(field) != stage.get(field):
+                    errors.append(f"{path}: {field} does not match stage {stage_id}")
+            if stage.get("publication_id") != publication_id:
+                errors.append(f"{path}: publication_id does not match stage {stage_id}")
+        elif status == "validation-failed":
+            if stage is None or stage.get("status") != "apply-failed":
+                errors.append(
+                    f"{path}: validation-failed publication requires apply-failed stage"
+                )
+            else:
+                for field in (
+                    "synthesis_id", "bundle_hash", "policy_id", "approval_id",
+                ):
+                    if publication.get(field) != stage.get(field):
+                        errors.append(f"{path}: {field} does not match stage {stage_id}")
+                if stage.get("publication_id") != publication_id:
+                    errors.append(f"{path}: publication_id does not match stage {stage_id}")
+
+    for stage_id, stage in stages.items():
+        publication_id = stage.get("publication_id")
+        publication = publications.get(str(publication_id)) if publication_id else None
+        if stage.get("status") == "applied" and publication is None:
+            errors.append(
+                f"stage {stage_id}: applied stage has no publication record"
+            )
+        if stage.get("status") == "ready-to-apply" and publication is not None:
+            if publication.get("status") == "published":
+                errors.append(
+                    f"publication {publication_id}: published publication requires stage status applied"
+                )
+
+    registry_path = root / "knowledge" / "registry.json"
+    if registry_path.is_file():
+        _, registry_errors = validate_knowledge_registry(root)
+        errors.extend(registry_errors)
+    pointed_publications: set[str] = set()
+    domains_root = root / "knowledge" / "domains"
+    if domains_root.exists():
+        for manifest_path in sorted(domains_root.glob("*/manifest.json")):
+            try:
+                domain = load_structured(manifest_path)
+            except ValidationFailure as exc:
+                errors.append(str(exc))
+                continue
+            publication_id = domain.get("current_publication_id")
+            if isinstance(publication_id, str):
+                pointed_publications.add(publication_id)
+                publication = publications.get(publication_id)
+                if publication is not None and publication.get("status") != "published":
+                    errors.append(
+                        f"{manifest_path}: current publication must be published"
+                    )
+    for publication_id, publication in publications.items():
+        if publication.get("knowledge_mode") and publication.get("status") == "published":
+            if publication_id not in pointed_publications:
+                warnings.append(
+                    f"publication {publication_id}: published knowledge is not current in a Domain Manifest"
+                )
+
+    return {
+        "gate_passed": not errors,
+        "errors": errors,
+        "warnings": warnings,
+        "counts": {
+            "stages": len(stages),
+            "publications": len(publications),
+            "domain_manifests": len(list(domains_root.glob("*/manifest.json")))
+            if domains_root.exists() else 0,
+            "registry_present": registry_path.is_file(),
+        },
+    }
 
 
 def _root_path(root: Path, value: Any, field: str) -> tuple[Path | None, str | None]:

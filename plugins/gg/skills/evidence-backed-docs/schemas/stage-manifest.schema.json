@@ -11,7 +11,7 @@
     "policy_hash": {"type": "string"},
     "approval_hash": {"type": "string"},
     "staged_tree_hash": {"type": "string"},
-    "status": {"enum": ["awaiting-semantic-review", "ready-to-apply", "applied"]},
+    "status": {"enum": ["awaiting-semantic-review", "ready-to-apply", "applied", "apply-failed"]},
     "gates": {"type": "object"},
     "artifacts": {"type": "array"}
   },

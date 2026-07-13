@@ -9,6 +9,10 @@ file is a compatibility playbook, not a native Slash Prompt.
 
 Require an approval bundle path.
 
+Validate it first with `observe-approval-bundles validate`. Unknown item types,
+cross-capability work, Knowledge mutations, and targets outside `wiki/**` fail
+closed. Preserve the CLI `validation_report` in the review record.
+
 1. Default to review-only; require explicit approval for named bundle items.
 2. Verify the bundle references the current document and evidence versions.
 3. Separate deterministic reference fixes from business-semantic changes.

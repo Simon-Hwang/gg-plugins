@@ -14,6 +14,15 @@ Read [references/workflow.md](references/workflow.md) before running. Use the sh
 Run `scripts/gg-evidence --root <wiki-root> --profile <profile> adapters preflight`.
 Run `scripts/gg-evidence --root <wiki-root> observation-requests validate` when
 runtime Observation Requests exist.
+Run `scripts/gg-evidence --root <wiki-root> consistency audit` before closing
+or publishing revalidation output when runtime Evidence, runtime Verdicts,
+Observation Requests, or Domain Manifests changed.
+Run `scripts/gg-evidence --root <wiki-root> storage validate` before
+completion; Maintain must reuse stable evidence directories and store run time,
+freshness, and supersession metadata inside files.
+For a published domain, also run
+`scripts/gg-evidence --root <wiki-root> lifecycle audit` before trusting its
+current pointer. Preserve the complete CLI `validation_report` from every gate.
 
 Stop and recommend `docs-observe` if Claim store, Evidence store, repository access, or index is unavailable. Record every optional adapter as available, unavailable, or degraded.
 
@@ -43,12 +52,19 @@ Evidence index.
 4. Revalidate fixed Findings before closing them.
 5. Escalate overdue Findings by appending events to the original Finding.
 6. Return time-sensitive Claims as `partial`, `unknown`, or `requires-runtime-evidence` when adapters are absent.
+   If adapter preflight fails because a profile command cannot be resolved,
+   record the failure as command/path/environment degradation and do not
+   generalize it into provider capability absence when earlier or same-run
+   evidence shows the provider healthy.
 7. Never describe scheduled maintenance as enabled unless a scheduler is configured and observed.
 8. Never edit an immutable Knowledge Publication in place. A changed Claim,
    freshness baseline, or Finding produces an Observation Request for a new
    Synthesis Bundle and Publication.
 9. Update a Domain Manifest or Registry only through `docs-publish`; Maintain
    records affected coordinates and revalidation results in the Evidence layer.
+10. Do not create timestamped audit or stage directories. If Evidence is stale,
+    append fresh Evidence/Verdicts or record supersession under the stable
+    domain/task path; freshness metadata decides whether another run is needed.
 
 ## Runtime provider boundary
 

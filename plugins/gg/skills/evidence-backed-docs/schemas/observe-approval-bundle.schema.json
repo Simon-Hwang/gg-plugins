@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gg.local/schemas/observe-approval-bundle.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "run_id",
+    "status",
+    "created_at",
+    "source_versions",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": [
+        "pending-approval",
+        "partially-approved",
+        "approved",
+        "applied",
+        "rejected",
+        "stale"
+      ]
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "source_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source", "version"],
+        "properties": {
+          "source": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "item_id",
+          "type",
+          "target",
+          "target_hash",
+          "candidate_patch",
+          "required_roles"
+        ],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 1},
+          "type": {
+            "enum": [
+              "reference-fix",
+              "business-intent-change",
+              "implementation-assertion-change",
+              "mixed-semantic-change"
+            ]
+          },
+          "target": {"type": "string", "pattern": "^wiki/"},
+          "target_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "candidate_patch": {
+            "type": "string",
+            "pattern": "^candidate-patches/"
+          },
+          "required_roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": ["wiki-maintainer", "business-owner", "code-owner"]
+            }
+          },
+          "claim_ids": {"type": "array", "items": {"type": "string"}},
+          "finding_ids": {"type": "array", "items": {"type": "string"}},
+          "description": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "approvals": {"type": "array"},
+    "notes": {"type": "array"}
+  },
+  "additionalProperties": false
+}

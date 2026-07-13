@@ -20,11 +20,12 @@ paragraphs. Process state such as Bundle, Stage, Approval, or publication
 eligibility is report metadata and must not enter business drafts.
 
 Blueprint-required Agent Knowledge sections and knowledge primitives are hard
-gates. Review draft structure is validated only for declared required
-headings; diagrams, tables, and walkthroughs are recommended presentation
-choices, not quota gates. Elect one primary document for duplicated concepts
-and reference it elsewhere so Owner authority, verification status, scope, and
-gap language cannot contradict across views.
+gates. Review drafts are validated as human approval surfaces: every declared
+required heading must contain reviewer-facing content and the draft must name
+the Knowledge IDs it covers. Diagrams, tables, and walkthroughs are recommended
+presentation choices, not quota gates. Elect one primary document for
+duplicated concepts and reference it elsewhere so Owner authority,
+verification status, scope, and gap language cannot contradict across views.
 
 Required dual-view Synthesis Bundle:
 
@@ -43,7 +44,10 @@ approval-bundle.md
 `artifacts[]` points only to `agent-knowledge/**`. `review_artifacts[]` maps
 each human review view to one or more published Knowledge IDs. Review drafts
 are included in the Bundle hash and approval scope but never become Publication
-targets.
+targets. Approval readers should not have to reconstruct the decision basis
+from Agent Knowledge, coverage, gaps, Observation Requests, and ledgers; the
+review draft should summarize those inputs at owner-readable fidelity while
+preserving anchors back to the traceable source.
 
 When a fact needed by a required slot is absent, emit an Observation Request rather than reading code and judging it inside synthesis.
 

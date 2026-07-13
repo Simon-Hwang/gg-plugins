@@ -61,6 +61,9 @@ scripts/gg-evidence --root <root> publications review-record \
   --stage-id <id> --review-record <path>
 scripts/gg-evidence --root <root> publications apply \
   --stage-id <id> --publication-id <id>
+scripts/gg-evidence --root <root> consistency audit
+scripts/gg-evidence --root <root> lifecycle audit
+scripts/gg-evidence --root <root> storage validate
 scripts/gg-evidence --root <root> knowledge registry validate
 scripts/gg-evidence --root <root> knowledge validate --domain <domain-id>
 ```
@@ -85,11 +88,25 @@ Use `publications apply` only after plan review. Use `publications rollback --pu
   `archive`, and `metadata-only` fail closed until their distinct executors and
   rollback tests exist.
 - Publish the Context Pack with the same publication identity and source versions as the knowledge.
+- Run `consistency audit` after staging and again after apply. Fail closed when
+  runtime-supported Evidence referenced by the Context Pack is missing from the
+  Domain Manifest freshness ledger, when terminal runtime Verdicts use degraded
+  Evidence, or when an Observation Request remains open with a terminal runtime
+  Verdict.
 - Publication directories are immutable. Only the Domain Manifest current
   pointer, Registry entry, and optional Gateway may change in later
   Publications.
+- Publication and Stage identifiers are stable semantic IDs, not timestamps.
+  Do not encode wall-clock time in `evidence/stages/**`,
+  `evidence/publications/**`, or
+  `knowledge/domains/**/publications/**`; record `staged_at`, `published_at`,
+  approval time, freshness, and source versions inside manifests.
 - Domain Manifest and Registry updates are part of the same Stage, Semantic
   Review, Apply, validation, and rollback transaction as the Knowledge files.
+- Apply must transition the bound Stage to `applied`; failed Apply must
+  transition it to `apply-failed`. Run `lifecycle audit` after Apply and
+  rollback, and fail completion when Approval, Stage, Publication, Manifest,
+  or Registry states/hashes disagree.
 - Preserve Publication history after failure or rollback.
 
 ## Completion
@@ -97,4 +114,6 @@ Use `publications apply` only after plan review. Use `publications rollback --pu
 Complete only when canonical Knowledge targets and Context Pack match the
 approved Bundle, the Domain Manifest and Registry resolve every route,
 post-publish and Locator validation pass, any Gateway is thin and unique, a
-Publication Record exists, and rollback data is complete.
+Publication Record exists, rollback data is complete, and storage,
+consistency, and lifecycle validation pass. Preserve every gate's complete CLI
+`validation_report`; self-authored PASS text is not sufficient.

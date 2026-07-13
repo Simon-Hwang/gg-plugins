@@ -94,7 +94,7 @@
     {
       "id": "capability:evidence-docs",
       "family": "capability",
-      "description": "Evidence-backed documentation: static claim observation, Blueprint-driven knowledge synthesis, approval-gated transactional publication, runtime-aware maintenance, and explicit evidence degradation.",
+      "description": "Evidence-backed documentation: static and runtime-aware claim observation, Blueprint-driven knowledge synthesis, approval-gated transactional publication, runtime-aware maintenance, and explicit evidence degradation.",
       "modules": ["skills-evidence-docs"]
     },
     {
